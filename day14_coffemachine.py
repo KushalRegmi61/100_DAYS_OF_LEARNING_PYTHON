@@ -30,9 +30,10 @@ resources = {
     "coffee": 100,
 }
 
-def report(RESOURCES, MONEY):
-    print(RESOURCES)
-    print(MONEY)
+# TODO 1   printing the resources after the coffee is prepared
+def report(RESOURCES, MONEY): 
+    print("Water:", RESOURCES['water'],"\n Milk:",RESOURCES['milk'], "\n Coffee:" ,RESOURCES['coffee'])
+    print("available money", MONEY)
 def user_choice():
     return input("“What would you like? (espresso/latte/cappuccino):”")   
 # TODO CHECKING IF THE RESOURCES AVAILABLE ARE SUFFFICIENT OF NOT  
@@ -41,7 +42,17 @@ def check_resources(DICT):
         if quantity < resources.get(ingredient, 0):
             return True
         else:
+            print(f"Sorry! Not enough {ingredient}")
+            
             return False
+# TODO UPDATE RESCOURCES IF THE ITEMS IS PREPARED
+def update_resources(update):
+    # resources['water'] = resources['water'] -update['water']
+    # resources['milk'] = resources['milk']- update['milk']
+    # resources['coffee'] = resources['coffee'] - update['coffee']
+    for items in update:
+        resources[items] -= update[items]
+            
 # TODO CALCULATE THE AMOUNT REQUIRED 
 def cost_comparision():
     """"use to compare cost and refund  """
@@ -52,22 +63,28 @@ def cost_comparision():
 cond1 = True
 money = 0 
 while True:
-    c = user_choice()
-    price = int(MENU[c]['cost'])  
-    if c == 'report':
+    choice = user_choice()  
+    if choice == 'report':
         report(resources,money)
-    items_ingridents = MENU[c]['ingredients']
-    cond = check_resources(items_ingridents)
-    user_price = cost_comparision()
-    # if check_recource function is true then this block of code is executed
-    if cond:
-        if user_price >= price:
-            print("Here is your change:",user_price-price, "$" )
-            print("Enjoy your c!")
-        else:
-            print("Not enough money for: your $ ", c, "amount is refunded")
+    elif choice == 'off':
+        cond1 = False
     else:
-        print("not enough resources")
+        price = int(MENU[choice]['cost'])    
+        items_ingridents = MENU[choice]['ingredients']
+        cond = check_resources(items_ingridents)
+        # if check_recource function is true then this block of code is executed
+        if cond:
+            user_price = cost_comparision()
+            if user_price >= price:
+                print("Here is your change:",user_price-price, "$" )
+                print("Enjoy your !",choice)
+                update_resources(items_ingridents)
+                money = price;
+                
+            else:
+                print("Not enough money for:  ", c, "your $",user_price,"amount is refunded")
+        # else:
+        #     print("not enough resources")
                 
             
     
