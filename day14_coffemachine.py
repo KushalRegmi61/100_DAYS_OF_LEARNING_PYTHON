@@ -33,7 +33,7 @@ resources = {
 # TODO 1   printing the resources after the coffee is prepared
 def report(RESOURCES, MONEY): 
     print("Water:", RESOURCES['water'],"\n Milk:",RESOURCES['milk'], "\n Coffee:" ,RESOURCES['coffee'])
-    print("available money", MONEY)
+    print("available money: $", MONEY)
 def user_choice():
     return input("“What would you like? (espresso/latte/cappuccino):”")   
 # TODO CHECKING IF THE RESOURCES AVAILABLE ARE SUFFFICIENT OF NOT  
@@ -43,7 +43,6 @@ def check_resources(DICT):
             return True
         else:
             print(f"Sorry! Not enough {ingredient}")
-            
             return False
 # TODO UPDATE RESCOURCES IF THE ITEMS IS PREPARED
 def update_resources(update):
