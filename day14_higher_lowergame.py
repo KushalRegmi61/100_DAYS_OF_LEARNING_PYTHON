@@ -307,7 +307,7 @@ def choice():
 #TODO FUNCTION TO PRINT THE NAME,DESCRIPTION, AND COUNTRY OF THE CHOOSEN DATA
 def display(display_data):
     """displaying the description, name and country"""
-    return display_data['name'],display_data['description'],display_data['country']
+    return print(display_data['name'],",",display_data['description'],", ",display_data['country'])
 #TODO FUNCTION TO COMPARE FOLLOWERS 
 def compare_follower(user_choice,choice1, choice2):
     if choice1['follower_count']>choice2['follower_count']:
@@ -319,8 +319,10 @@ while True:
     a = choice()
     while True:
         b = choice()
-        print("CHOICE A:",display(a))
-        print("CHOICE B:",display(b))
+        print("CHOICE A: \t")
+        display(a)
+        print("CHOICE B:")
+        display(b)
         print(a['follower_count'],b['follower_count'])
         guess = input("choose between two option(A/B):").lower()
         if compare_follower(user_choice =guess,choice1 =a,choice2 = b):
