@@ -8,9 +8,9 @@ for i in question_data:
 from quiz_brain import QuizBrain        
 quiz = QuizBrain(question_bank)
 score =0
-
-while quiz.still_has_question:
-    print(quiz.next_question())       
-    quiz.qn_no +=1 
+# print("hello world")
+# while quiz.still_has_question:
+#     print(quiz.next_question())       
+#     quiz.qn_no +=1 
     
     
