@@ -12,7 +12,7 @@ data = [
         'country': 'Portugal'
     },
     {
-        'name': 'Ariana Grande',
+        'name': 'Ariana Grande', 
         'follower_count': 183,
         'description': 'Musician and actress',
         'country': 'United States'
@@ -319,11 +319,11 @@ while True:
     a = choice()
     while True:
         b = choice()
-        print("CHOICE A: \t")
+        print("CHOICE A:")
         display(a)
         print("CHOICE B:")
         display(b)
-        print(a['follower_count'],b['follower_count'])
+        # print(a['follower_count'],b['follower_count'])
         guess = input("choose between two option(A/B):").lower()
         if compare_follower(user_choice =guess,choice1 =a,choice2 = b):
             score +=1
