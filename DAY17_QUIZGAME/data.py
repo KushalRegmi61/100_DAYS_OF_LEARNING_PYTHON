@@ -25,4 +25,5 @@ question_data = [
     {"text": "The Earth is closest to the Sun in January.", "answer": "True"},
     {"text": "Octopuses have three hearts.", "answer": "True"},
     # Add more questions here if needed
-]
+] 
+    
