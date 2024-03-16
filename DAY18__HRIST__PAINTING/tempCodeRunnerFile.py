@@ -1,0 +1,1 @@
+turt.pencolor(color_generator())

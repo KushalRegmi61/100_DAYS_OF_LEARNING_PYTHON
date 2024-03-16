@@ -7,10 +7,10 @@ for i in question_data:
     question_bank.append( Question(Text, Answer))
 from quiz_brain import QuizBrain        
 quiz = QuizBrain(question_bank)
+while quiz.should_continue():
+    while quiz.still_has_question():       
+        quiz.next_question()
 
-while quiz.still_has_question():       
-    quiz.next_question()
-
-print("Your game is completed")    
-print(f"Your score is{quiz.count}/{quiz.qn_no}")    
-        
+    print("\n\nYour Quiz_game is completed")    
+    print(f"\nYour final score is {quiz.count}/{quiz.qn_no}")    
+            
