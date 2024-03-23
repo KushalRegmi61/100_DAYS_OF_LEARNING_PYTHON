@@ -6,9 +6,9 @@ up = 90
 down = 270
 right = 0
 left= 180
-class Snake(Turtle):
+class Snake():
     def  __init__(self): 
-        super().__init__()
+        
         self.segment = []
         self.create_snake()
         self.head = self.segment[0]
