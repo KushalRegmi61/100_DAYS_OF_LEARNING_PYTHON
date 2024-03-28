@@ -39,6 +39,10 @@ screen.onkeypress(l_paddle.move_down, "s")
 
 is_game_on = True
 while is_game_on:
+        #detect it the ball out range of l_paddle      
+    if ball.xcor() < -380:
+        ball.reset_position()  
+        scoreboard.right_score()    
     time.sleep(ball.move_speed)
     screen.update()
     ball.move()
@@ -57,10 +61,7 @@ while is_game_on:
         ball.reset_position()
         scoreboard.left_score()
         
-        #detect it the ball out range of l_paddle      
-    if ball.xcor() < -380:
-        ball.reset_position()  
-        scoreboard.right_score()
+
         
         
 
