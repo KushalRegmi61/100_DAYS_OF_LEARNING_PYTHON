@@ -31,6 +31,7 @@ while game_is_on:
     for acar in car.all_cars:
         if acar.distance(player)<20:
             game_is_on = False
+            # displaying the final score 
             screen.clear()
             score.final_score()
     #CHECKING IF THE PLAYER HAS REACHED FINISH LINE OR NOT
@@ -39,6 +40,6 @@ while game_is_on:
         car.increase_speed()
         score.update_score()
 
-# displaying the final score        
+       
 
 screen.exitonclick()    
