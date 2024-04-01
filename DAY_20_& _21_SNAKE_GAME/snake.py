@@ -38,6 +38,14 @@ class Snake():
             self.segment[i].goto(new_x,new_y)
         self.head.forward(MOVING_DISTANCE)
         
+        #function to reset sanke
+    def reset(self):
+        for i in self.segment:
+            i.goto(10000,1000)
+        self.segment.clear()
+        self.create_snake()
+        self.head = self.segment[0]
+        
  #TODO FUNTION TO CONTROL MOVEMENTS OF THE SNAKES                  
     def up(self):
         if self.head.heading()!= down:

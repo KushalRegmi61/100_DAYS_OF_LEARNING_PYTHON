@@ -7,6 +7,10 @@ screen = Screen()
 #creating a Food class object
 food = Food()
 
+#creating a function to ask for the user input
+def user_choice():
+    choice = screen.textinput("Do you want to play the game?")
+    return choice.lower() == "y"
 #modifying the screen
 screen.setup(width= 600 , height= 600) 
 screen.bgcolor("black")
@@ -15,8 +19,8 @@ screen.tracer(0)
 screen.listen()
 
 #creating Score class object
-from scorecard import Score
-score = Score()
+from scorecard import Scoreboard
+score = Scoreboard()
 
 #creating snake class object and moving the snake
 snake = Snake()
@@ -27,14 +31,16 @@ screen.onkey(snake.right, key = "Right")
 screen.onkey(snake.left, key = "Left")
 
 
+
 is_game_on = True
 
 while is_game_on:
 
 #decting collision with  its tail   
     for segment in snake.segment[1:]:
-        if snake.head.distance(segment)< 10:
-            is_game_on = False       
+        if snake.segment[0].distance(segment)< 10:
+            score.reset() 
+            snake.reset()      
 
 #decting collision with food
     if snake.head.distance(food)<15:
@@ -44,16 +50,17 @@ while is_game_on:
             
  #decting collison with wall       
     if snake.head.xcor()>290 or snake.head.xcor()<-290 or snake.head.ycor()<-290 or snake.head.ycor()>290:
-        is_game_on = False       
+        score.reset()
+        snake.reset()
     
     screen.update()
     time.sleep(.1)
     snake.move()
-    screen.title(f"Score = {score.score}")
+    
+    
                      
 #TODO PRINTING THE FINAL SCORE
-
-score.game_over()    
+ 
     
     
 screen.exitonclick()
