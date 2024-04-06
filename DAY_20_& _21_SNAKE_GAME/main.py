@@ -2,65 +2,82 @@ from turtle import Screen
 from snake import Snake
 import time
 from food import Food
-#creating Screen class object
-screen = Screen()
-#creating a Food class object
-food = Food()
+from scorecard import Scoreboard
 
-#creating a function to ask for the user input
-def user_choice():
-    choice = screen.textinput("Do you want to play the game?")
-    return choice.lower() == "y"
-#modifying the screen
-screen.setup(width= 600 , height= 600) 
+# Create Screen object
+screen = Screen()
+screen.setup(width=600, height=600)
 screen.bgcolor("black")
 screen.title("Snake Game...")
 screen.tracer(0)
 screen.listen()
 
-#creating Score class object
-from scorecard import Scoreboard
+# Create Snake object
+snake = Snake()
+
+# Create Food object
+food = Food()
+
+# Create Scoreboard object
 score = Scoreboard()
 
-#creating snake class object and moving the snake
-snake = Snake()
-# snake.speed(900)
-screen.onkey(snake.up, key = "Up")
-screen.onkey(snake.down, key = "Down")
-screen.onkey(snake.right, key = "Right")
-screen.onkey(snake.left, key = "Left")
 
+# Function to start the game
+def start_game():
+    global is_game_on
+    is_game_on = True
 
+# Bind start_game function to spacebar key
+screen.onkey(start_game, "space")
 
-is_game_on = True
+# Game loop
+while True:
+    is_game_on = False  # Game starts only when spacebar is pressed
 
-while is_game_on:
+    # Wait for spacebar press to start the game
+    while not is_game_on:
+        screen.update()
 
-#decting collision with  its tail   
-    for segment in snake.segment[1:]:
-        if snake.segment[0].distance(segment)< 10:
-            score.reset() 
-            snake.reset()      
+    # Reset snake, food, and score
+    snake.reset()
+    food.new_position()
+    score.reset()
 
-#decting collision with food
-    if snake.head.distance(food)<15:
-        food.new_position()
-        snake.extend()
-        score.increase_score()
-            
- #decting collison with wall       
-    if snake.head.xcor()>290 or snake.head.xcor()<-290 or snake.head.ycor()<-290 or snake.head.ycor()>290:
-        score.reset()
-        snake.reset()
-    
-    screen.update()
-    time.sleep(.1)
-    snake.move()
-    
-    
-                     
-#TODO PRINTING THE FINAL SCORE
- 
-    
-    
+    # Event listeners for snake movement
+    screen.onkey(snake.up, "Up")
+    screen.onkey(snake.down, "Down")
+    screen.onkey(snake.right, "Right")
+    screen.onkey(snake.left, "Left")
+
+    while is_game_on:
+        screen.update()
+        time.sleep(0.1)
+
+        snake.move()
+
+        # Detect collision with food
+        if snake.head.distance(food) < 15:
+            food.new_position()
+            snake.extend()
+            score.increase_score()
+
+        # Detect collision with walls
+        if (
+            abs(snake.head.xcor()) > 290
+            or abs(snake.head.ycor()) > 290
+        ):
+            score.reset()
+            snake.reset()
+            is_game_on = False  # End the game loop
+
+        # Detect collision with tail
+        for segment in snake.segment[1:]:
+            if snake.head.distance(segment) < 10:
+                score.reset()
+                snake.reset()
+                is_game_on = False  # End the game loop
+
+# Print final score
+print("Final score:", score.current_score)
+
 screen.exitonclick()
