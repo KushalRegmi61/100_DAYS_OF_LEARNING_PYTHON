@@ -1,0 +1,1 @@
+window.geometry("500x300")
