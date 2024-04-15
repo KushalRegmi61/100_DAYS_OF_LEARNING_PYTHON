@@ -3,14 +3,14 @@ import csv
 import pandas
 #creating a screen class object
 screen = turtle.Screen()
-image =r"DAY_25\us_states_game\blank_states_img.gif"
+image =r"DAY_25_THREE_PORJECTS\us_states_game\blank_states_img.gif"
 
 #adding image to screen
 screen.addshape(image)
 turtle.shape(image)
 
 # creating states varible 
-states = pandas.read_csv(r"DAY_25\us_states_game\50_states.csv")
+states = pandas.read_csv(r"DAY_25_THREE_PORJECTS\us_states_game\50_states.csv")
 states_name =[ name.strip() for name in states["state"].to_list()]
 
 #turning the screen tracer off
@@ -44,5 +44,5 @@ missing_states_names= [state for state in states_name if state not in guessed_st
 #creating a csv file for  the missing states 
 dict = {"Missing_States_Name": missing_states_names }
 missing_states = pandas.DataFrame(dict)
-missing_states.to_csv(r"DAY_25\us_states_game\missing_states_to_learn.csv")
+missing_states.to_csv(r"DAY_25_THREE_PROJECTS\us_states_game\missing_states_to_learn.csv")
 

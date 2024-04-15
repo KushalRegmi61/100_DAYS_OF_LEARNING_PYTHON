@@ -1,1 +1,0 @@
-screen.addshape(image)

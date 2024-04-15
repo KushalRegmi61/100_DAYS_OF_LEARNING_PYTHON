@@ -1,6 +1,6 @@
 import csv
 import pandas
-data = pandas.read_csv(r"DAY_25\weather_data_program\weather_data.csv")
+data = pandas.read_csv(r"DAY_25_THREE_PORJECTS\weather_data_program\weather_data.csv")
 print(data["temp"].mean())
 
 print(data[data.temp == data.temp.max()])
@@ -14,4 +14,4 @@ std_data = {
     }
 data = pandas.DataFrame(std_data)
 print(data)
-data.to_csv(r"DAY_25\weather_data_program\std_data.csv")
+data.to_csv(r"DAY_25_THREE_PORJECTS\weather_data_program\std_data.csv")
