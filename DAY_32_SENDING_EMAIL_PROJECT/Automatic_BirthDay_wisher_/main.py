@@ -3,9 +3,14 @@ import smtplib
 import random
 import datetime as dt
 import pandas
+import os
+from dotenv import load_dotenv
 
-my_email = "nepmrkush@gmail.com" #my email id
-my_password= "audj quhv eyky ejlq" #random id password
+#loading environment variable 
+load_dotenv()
+
+my_email = os.getenv("my_email") #my email id
+my_password= os.getenv("EMAIL_PASSWORD") #random id password
 
 #creating a datetime class object
 time = dt.datetime.now()
