@@ -9,8 +9,8 @@ load_dotenv()
 
 # today = datetime(2024, 5,24)
 today = datetime.now()
-DATE = today.strftime("%Y/%m/%d")
-print(DATE)
+DATE = today.strftime("%Y%m%d")
+
 
 
 #setting the variable values
