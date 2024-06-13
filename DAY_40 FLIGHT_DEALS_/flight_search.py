@@ -10,7 +10,7 @@ class FlightSearch:
     def __init__(self):
         self.api_key = os.getenv('AMADEUS_API_KEY')
         self.api_secret = os.getenv('AMADEUS_API_SECRET')
-        self.token = self.get_token()
+        self.token = f"Bearer {self.get_token()}"
         self.return_date = (datetime.now() + timedelta(days=180)).strftime("%Y-%m-%d")
 
     def iata_code(self, cityname):
@@ -22,7 +22,7 @@ class FlightSearch:
         }
 
         headers = {
-            "Authorization": f"Bearer {self.token}"
+            "Authorization": self.token
         }
 
         response = requests.get(CITY_SEARCH_URL, headers=headers, params=params)
@@ -69,7 +69,7 @@ class FlightSearch:
     def fetch_flight_data(self, departure, destination, departure_date):
         url = "https://test.api.amadeus.com/v2/shopping/flight-offers"
         headers = {
-            "Authorization": f"Bearer {self.token}"
+            "Authorization": self.token
         }
         params = {
             "originLocationCode": departure,
@@ -86,5 +86,6 @@ class FlightSearch:
         if response.status_code == 200:
             return response.json()
         else:
-            print(f"Error fetching flight data: {response.status_code}")
+            print(f"Error fetching flight data: {response.status_code}\n{response.text}")
             return None
+

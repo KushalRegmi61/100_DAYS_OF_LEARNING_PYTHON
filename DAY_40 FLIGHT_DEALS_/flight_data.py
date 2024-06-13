@@ -83,23 +83,23 @@ class FlightData(FlightSearch):
             return city_name
         return None
 
-    def get_cheapest_flight(self):
+    def get_cheapest_flight(self,dep_location, des_location):
         cheapest_flight = None
         cheapest_price = float('inf')
 
         today = datetime.today()
-        dates = [(today + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(0, 180, 2)]  # Check every 2nd day
+        dates = [(today + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(0, 180, 20)]  # Check every 2nd day
 
         def fetch_for_date(date):
             retries = 3
             while retries > 0:
-                flight_data = self.fetch_flight_data(departure="LON", destination="PAR", departure_date=date)
+                flight_data = self.fetch_flight_data(departure=dep_location, destination=des_location, departure_date=date)
                 if flight_data:
                     return self.get_daily_cheapest_flight(flight_data)
                 retries -= 1
-                if retries > 0:
-                    print(f"Retrying... ({3 - retries}/3)")
-                    time.sleep(5)  # Wait for 5 seconds before retrying
+                # if retries > 0:
+                    # print(f"Retrying... ({3 - retries}/3)")
+                time.sleep(4)  # Wait for 4 seconds before retrying
             return None
 
         with ThreadPoolExecutor(max_workers=5) as executor:  # Adjust max_workers as needed
@@ -112,12 +112,4 @@ class FlightData(FlightSearch):
 
         return cheapest_flight
 
-# Find the cheapest flight over the next 6 months
-flight_data_instance = FlightData()
-cheapest_flight = flight_data_instance.get_cheapest_flight()
 
-if cheapest_flight:
-    print("Cheapest flight found:")
-    print(cheapest_flight)
-else:
-    print("No flights found.")
