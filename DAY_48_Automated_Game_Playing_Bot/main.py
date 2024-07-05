@@ -23,36 +23,35 @@ driver.get("https://orteil.dashnet.org/experiments/cookie/")
 # Find initial elements
 cookie_clicker = driver.find_element(By.ID, "cookie")
 
-# Function to get the price list of store items with explicit wait
-def get_price_list(store_elements):
+# Function to get the price list and IDs of store items with explicit wait
+def get_cookie_upgrades():
     try:
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "store"))
         )
-        price_list = []
+        store_elements = driver.find_elements(By.CSS_SELECTOR, "#store div")
+        cookie_upgrades = {}
         for element in store_elements[:8]:  # Limit to first 8 store items
             try:
+                item_name = element.get_attribute("id")
                 item_cost_str = WebDriverWait(driver, 10).until(
                     EC.visibility_of(element.find_element(By.CSS_SELECTOR, "b"))
                 ).text
                 item_cost = int(item_cost_str.split('-')[-1].strip().replace(',', ''))
-                price_list.append(item_cost)
+                cookie_upgrades[item_cost] = item_name
             except (NoSuchElementException, StaleElementReferenceException, ValueError):
                 continue
-        return price_list
+        return cookie_upgrades
     except TimeoutException:
-        return []
+        return {}
 
-# Function to find index of maximum value below a threshold
-def find_max_index_below_threshold(integer_list, money):
-    max_value = -1
-    max_index = -1
-    for index, value in enumerate(integer_list):
-        if value <= money:
-            if value > max_value:
-                max_value = value
-                max_index = index
-    return max_index
+# Function to find the most expensive affordable upgrade
+def find_max_affordable_upgrade(cookie_upgrades, money):
+    affordable_upgrades = {cost: id for cost, id in cookie_upgrades.items() if cost <= money}
+    if affordable_upgrades:
+        highest_price = max(affordable_upgrades)
+        return affordable_upgrades[highest_price]
+    return None
 
 # Function to get current money
 def get_money():
@@ -71,20 +70,16 @@ while True:
     # Every 10 seconds, check and purchase the most expensive affordable upgrade
     if int(time.time() - start_time) % 10 == 0:
         try:
-            store_elements = driver.find_elements(By.CSS_SELECTOR, "#store div")
-            price_list = get_price_list(store_elements=store_elements)
-            print(price_list)
+            cookie_upgrades = get_cookie_upgrades()
             money = get_money()
-            index = find_max_index_below_threshold(price_list, money)
+            to_purchase_id = find_max_affordable_upgrade(cookie_upgrades, money)
             
-            if index != -1:
+            if to_purchase_id:
                 try:
-                    
-                    store_elements[index].click()
-                    print(f"Purchased upgrade at index {index} costing {price_list[index]} cookies.")
+                    driver.find_element(By.ID, to_purchase_id).click()
+                    print(f"Purchased upgrade: {to_purchase_id}")
                 except (StaleElementReferenceException, NoSuchElementException):
                     continue
-            
         except (StaleElementReferenceException, NoSuchElementException):
             continue
 
