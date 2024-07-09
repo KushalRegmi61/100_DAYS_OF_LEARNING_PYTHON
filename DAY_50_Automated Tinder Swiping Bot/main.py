@@ -9,14 +9,15 @@ import time
 import os
 from dotenv import load_dotenv
 
+#issuse-1 unable to click to continue as kul button and next need to verify the twitter account manually
+
 # Load environment variables
 load_dotenv()
 EMAIL = os.getenv('GF_FB_EMAIL')
 PASSWORD = os.getenv('GF_FB_PASS')
 
 # Path to your ChromeDriver executable
-webdriver_path = 'C:\\Program Files\\Google\\Chrome_Driver\\chromedriver.exe'
-
+webdriver_path = 'C:\\Program Files\\Google\\Chrome_Driver\\chromedriver.exe'  
 # Configure Chrome options
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("detach", True)
@@ -71,8 +72,13 @@ try:
     )
     password.send_keys(PASSWORD, Keys.ENTER)
 
+    # Allowing access to Tinder
+    time.sleep(2)
+    continue_xpath = '//*[@id="mount_0_0_Xp"]/div/div/div/div/div/div/div[1]/div[3]/div/div/div/div/div/div/div[2]/div/div/div[1]/div/div/div/div[1]/div/div/div/div'
+    wait_and_click(driver, continue_xpath, timeout=30)
+    # a= input('Press Enter Key to verify:')
+    
     time.sleep(4)
-
     # Switching back to Tinder window
     driver.switch_to.window(base_window)
     print(driver.title)
@@ -106,7 +112,6 @@ try:
             time.sleep(4)
             continue
         
-                
 except TimeoutException:
     print("Timed out waiting for page to load")
 except NoSuchElementException:
