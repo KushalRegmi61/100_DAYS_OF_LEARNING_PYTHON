@@ -82,8 +82,16 @@ class InternetSpeedTwitterBot:
                     EC.presence_of_element_located((By.XPATH, tweet_button_xpath))
                 )
             self.driver.execute_script('arguments[0].click()', tweet_button)
+
         except (TimeoutException, NoSuchElementException, ElementClickInterceptedException) as e:
             print(f"Exception during wait_and_send_keys: {e}")
+        
+        else:
+            time.sleep(2)
+            print("Tweet was posted successfully..")
+            
+        finally:
+            self.driver.quit()
             
             
             
