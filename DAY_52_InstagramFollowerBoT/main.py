@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 load_dotenv()
 EMAIL = os.getenv('GF_FB_EMAIL')
 PASSWORD = os.getenv('INSTA_PASS')
-SIMILAR_ACCOUNT=''
+SIMILAR_ACCOUNT='kushalregmi_'
 
 # Path to your ChromeDriver executable
 webdriver_path = 'C:\\Program Files\\Google\\Chrome_Driver\\chromedriver.exe'
@@ -62,10 +62,15 @@ class InstaFollower:
         #turning off the notification
         turn_off_xpath="// button[contains(text(), 'Not Now')]"
         self.wait_and_click(turn_off_xpath)
+        time.sleep(2)
     
     #TODO: 2 method to find_followers()
     def find_follower(self):
-        pass
+        similarAcc_link=f'https://www.instagram.com/{SIMILAR_ACCOUNT}/'
+        self.driver.get(similarAcc_link)
+        time.sleep(2)
+        followerButton_xpath=f"//a[contains(@href, '/{SIMILAR_ACCOUNT}/followers/')]"
+        self.wait_and_click(followerButton_xpath)
     
     #TODO: 3 Method for following INsta accounts
     
