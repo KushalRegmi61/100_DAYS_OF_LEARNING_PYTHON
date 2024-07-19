@@ -64,14 +64,43 @@ class InstaFollower:
         self.wait_and_click(turn_off_xpath)
         time.sleep(2)
     
+
     #TODO: 2 method to find_followers()
-    def find_follower(self):
-        similarAcc_link=f'https://www.instagram.com/{SIMILAR_ACCOUNT}/'
-        self.driver.get(similarAcc_link)
-        time.sleep(2)
-        followerButton_xpath=f"//a[contains(@href, '/{SIMILAR_ACCOUNT}/followers/')]"
-        self.wait_and_click(followerButton_xpath)
-    
+    def find_followers(self):
+        time.sleep(5)
+        # Show followers of the selected account. 
+        self.driver.get(f"https://www.instagram.com/{SIMILAR_ACCOUNT}")
+
+        time.sleep(3)
+        #pressing follower button 
+        follower_xpath="//a[contains(@href, '/kushalregmi_/followers/')]"
+        self.wait_and_click(follower_xpath)
+        time.sleep(4)
+        
+        # The xpath of the modal that shows the followers will change over time. Update yours accordingly.
+        modal_xpath = "/html/body/div[6]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]"
+        modal = self.driver.find_element(by=By.XPATH, value=modal_xpath)
+        
+        
+        for i in range(10):
+            # In this case we're executing some Javascript, that's what the execute_script() method does.
+            # The method can accept the script as well as an HTML element.
+            # The modal in this case, becomes the arguments[0] in the script.
+            # Then we're using Javascript to say: "scroll the top of the modal (popup) element by the height of the modal (popup)"
+            self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", modal)
+            time.sleep(4)
+            
+            
+            
+        
+        # # Scroll till Followers list is there 
+        # while True: 
+        #     self.driver.execute_script( 
+        #         'arguments[0].scrollTop = arguments[0].scrollTop + arguments[0].offsetHeight;',  
+        #     followerButton_xpath
+        #     ) 
+        #     time.sleep(1) 
+            
     #TODO: 3 Method for following INsta accounts
     
     def follow(self):
@@ -104,7 +133,7 @@ class InstaFollower:
 # creating a instaFollower class bot
 bot = InstaFollower()
 bot.login()#login to the insta id..
-bot.find_follower()# finding the insta_id
+bot.find_followers()# finding the insta_id
 bot.follow() #method to folllow insta account
 
     
