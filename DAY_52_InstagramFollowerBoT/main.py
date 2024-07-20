@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
-EMAIL = os.getenv('GF_FB_EMAIL')
+EMAIL = os.getenv('INSTA_EMAIL')
 PASSWORD = os.getenv('INSTA_PASS')
 SIMILAR_ACCOUNT='kushalregmi_'
 
@@ -37,21 +37,39 @@ class InstaFollower:
         self.service = Service(webdriver_path)
         self.driver = webdriver.Chrome(service=self.service, options=self.chrome_options)
 
-    #TODO: 1 method to loginIN to the account 
+        #TODO: 1 method to loginIN to the account 
     def login(self):
         self.driver.get('https://www.instagram.com/accounts/login/')
         time.sleep(7)
         
-        #sending username and password
-        username_xpath="//*[@aria-label='Phone number, username, or email']"
-        self.wait_and_send_keys(xpath=username_xpath,keys= EMAIL)
+        # Sending username and password
+        username_xpath = "//*[@aria-label='Phone number, username, or email']"
+        self.wait_and_send_keys(xpath=username_xpath, keys=EMAIL)
         
-        password_xpath="""//*[@aria-label='Password']"""
-        self.wait_and_send_keys(password_xpath,PASSWORD,enterkey=Keys.ENTER)
-        time.sleep(2)
+        password_xpath = "//*[@aria-label='Password']"
+        self.wait_and_send_keys(password_xpath, PASSWORD, enterkey=Keys.ENTER)
+        # time.sleep(8)
+        
+        # Sending the backup code
+        # backupCode_buttonXpath = "//button[contains(text(),'backup codes')]"
+        
+        # try:
+        #     backupCode_button = WebDriverWait(self.driver, 20).until(
+        #         EC.presence_of_element_located((By.XPATH, backupCode_buttonXpath))
+        #     )
+        #     self.driver.execute_script('arguments[0].click()', backupCode_button)
+        # except Exception as e:
+        #     print(f"An error occurred: {e}")
+        #     self.driver.save_screenshot('error_screenshot.png')
+        #     raise e
+            
+        # #sending backup code using environment variable
+        # # input_xpath='//*[@aria-label="Security Code"]'
+        # # self.wait_and_send_keys(xpath=input_xpath, keys=INSTA_BACKUP, enterkey=Keys.ENTER)
+        
                 
         #veryfing the browser  manually..
-        input("Press Enter to After you complete verification: ")
+        # input("Press Enter to After you complete verification: ")
         
         #save_info button  value="//button[contains(text(), 'Click me')]")
         info_xpath="""// div[contains(text(), 'Not now')]"""
@@ -69,43 +87,58 @@ class InstaFollower:
     def find_followers(self):
         time.sleep(5)
         # Show followers of the selected account. 
-        self.driver.get(f"https://www.instagram.com/{SIMILAR_ACCOUNT}")
+        self.driver.get(f"https://www.instagram.com/{SIMILAR_ACCOUNT}/followers/")
 
         time.sleep(3)
         #pressing follower button 
         follower_xpath="//a[contains(@href, '/kushalregmi_/followers/')]"
         self.wait_and_click(follower_xpath)
-        time.sleep(4)
+        time.sleep(6)
         
         # The xpath of the modal that shows the followers will change over time. Update yours accordingly.
         modal_xpath = "/html/body/div[6]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]"
         modal = self.driver.find_element(by=By.XPATH, value=modal_xpath)
         
+        self.follow(self.driver)
         
-        for i in range(10):
-            # In this case we're executing some Javascript, that's what the execute_script() method does.
-            # The method can accept the script as well as an HTML element.
-            # The modal in this case, becomes the arguments[0] in the script.
-            # Then we're using Javascript to say: "scroll the top of the modal (popup) element by the height of the modal (popup)"
-            self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", modal)
-            time.sleep(4)
-            
-            
-            
         
-        # # Scroll till Followers list is there 
-        # while True: 
-        #     self.driver.execute_script( 
-        #         'arguments[0].scrollTop = arguments[0].scrollTop + arguments[0].offsetHeight;',  
-        #     followerButton_xpath
-        #     ) 
-        #     time.sleep(1) 
+        
+        # for i in range(10):
+        #     # In this case we're executing some Javascript, that's what the execute_script() method does.
+        #     # The method can accept the script as well as an HTML element.
+        #     # The modal in this case, becomes the arguments[0] in the script.
+        #     # Then we're using Javascript to say: "scroll the top of the modal (popup) element by the height of the modal (popup)"
+        #     self.follow(self.driver)
+        #     time.sleep(1)
+        #     self.driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", modal)
+        #     time.sleep(4)
+            
+            
+            
             
     #TODO: 3 Method for following INsta accounts
     
-    def follow(self):
-        pass
+    def follow(self, driver):
+        try: 
+            followButton_xpath='//button[@class=" _acan _acap _acas _aj1- _ap30"]'
+            followButtons=driver.find_elements(By.XPATH, followButton_xpath)#list of follow button in that page
+            for element in followButtons:
+                try:
+                    element.click()
+                    
+                except ElementClickInterceptedException:
+                    time.sleep(1)
+                    cancelButton_xpath='//button[contains(text(),"Cancel")]' 
+                    self.wait_and_click(cancelButton_xpath)
+                
+                finally:
+                    time.sleep(2)
+                               
+   
+        except (TimeoutException, NoSuchElementException, ElementClickInterceptedException) as e:
+            print(f"Exception during wait_and_send_keys: {e}")
     
+    #method to send keys
     def wait_and_send_keys(self, xpath, keys, enterkey=None, timeout=20):
         try:
             element = WebDriverWait(self.driver, timeout).until(
@@ -134,7 +167,8 @@ class InstaFollower:
 bot = InstaFollower()
 bot.login()#login to the insta id..
 bot.find_followers()# finding the insta_id
-bot.follow() #method to folllow insta account
+
+
 
     
     
