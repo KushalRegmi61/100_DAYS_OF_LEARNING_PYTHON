@@ -3,4 +3,4 @@
 /.git
 .cache
 test.py
-/env
+/.venv
