@@ -45,29 +45,9 @@ class CafeForm(FlaskForm):
     locationURL = StringField('Cafe Location on Google Map (URL)', validators=[DataRequired(), URL()])
     openTime = StringField('Open Time (e.g. 8AM)', validators=[DataRequired()])
     closeTime = StringField('Closing Time (e.g. 10PM)', validators=[DataRequired()])
-    coffeeRating = SelectField('Coffee Rating', choices=[
-        ( '☕️'),
-        ( '☕️☕️'),
-        ( '☕️☕️☕️'),
-        ( '☕️☕️☕️☕️'),
-        ( '☕️☕️☕️☕️☕️')
-    ], validators=[DataRequired()])
-    wifiRating = SelectField('Wifi Speed', choices=[
-        ('✘'),
-        ('💪'),
-        ('💪💪'),
-        ('💪💪💪'),
-        ('💪💪💪💪'),
-        ('💪💪💪💪💪')
-    ], validators=[DataRequired()])
-    powerOutlet = SelectField('Power Socket Availability', choices=[
-        ('✘'),
-        ( '🔌'),
-        ( '🔌🔌'),
-        ( '🔌🔌🔌'),
-        ( '🔌🔌🔌🔌'),
-        ( '🔌🔌🔌🔌🔌')
-    ], validators=[DataRequired()])
+    coffeeRating = SelectField("Coffee Rating", choices=["☕️", "☕☕", "☕☕☕", "☕☕☕☕", "☕☕☕☕☕"], validators=[DataRequired()])
+    wifiRating = SelectField("Wifi Strength Rating", choices=["✘", "💪", "💪💪", "💪💪💪", "💪💪💪💪", "💪💪💪💪💪"], validators=[DataRequired()])
+    powerOutlet = SelectField("Power Socket Availability", choices=["✘", "🔌", "🔌🔌", "🔌🔌🔌", "🔌🔌🔌🔌", "🔌🔌🔌🔌🔌"], validators=[DataRequired()])
     submit = SubmitField('Submit')
 
 # all Flask routes below
