@@ -1,49 +1,45 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_bootstrap import Bootstrap5
+from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, String, Float
+from flask_wtf import FlaskForm
+from wtforms import StringField, FloatField, SubmitField
+from wtforms.validators import DataRequired, NumberRange
 
 app = Flask(__name__)
+bootstrap = Bootstrap(app)
 
-## CREATE DATABASE
-class Base(DeclarativeBase):
-    pass
-
+# Configure SQLite database
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///new-books-collection.db"
+db = SQLAlchemy(app)
 
-# Create the extension
-db = SQLAlchemy(model_class=Base)
-# Initialize the app with the extension
-db.init_app(app)
-
-## CREATE TABLE
+# Define the Book model
 class Book(db.Model):
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    title: Mapped[str] = mapped_column(String(250), unique=True, nullable=False)
-    author: Mapped[str] = mapped_column(String(250), nullable=False)
-    rating: Mapped[float] = mapped_column(Float, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(250), unique=True, nullable=False)
+    author = db.Column(db.String(250), nullable=False)
+    rating = db.Column(db.Float, nullable=False)
 
-    # Optional: this will allow each book object to be identified by its title when printed.
     def __repr__(self):
         return f'<Book {self.title}>'
 
-# Create table schema in the database. Requires application context.
+# Create the table schema in the database
 with app.app_context():
     db.create_all()
 
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
-Bootstrap5(app)
+
+# Create the form class
+class RatingForm(FlaskForm):
+    rating = FloatField('Rating', validators=[
+        DataRequired(message="Rating cannot be empty."),
+        NumberRange(min=0, max=10, message="Rating must be between 0 and 10.")
+    ])
+    submit = SubmitField(label="Change Rating")
 
 @app.route('/')
 def home():
-    all_books = []
     with app.app_context():
-        result = db.session.execute(db.select(Book).order_by(Book.title))
-        all_books = result.scalars().all()
-        # print(all_books)
-        # for book in books:
-        #     all_books.append({'title': book.title, 'author': book.author, 'rating': book.rating})
+        all_books = Book.query.order_by(Book.title).all()
     return render_template('index.html', books=all_books)
 
 @app.route("/add", methods=['GET', 'POST'])
@@ -52,17 +48,35 @@ def add():
         data = request.form
         book_name = data['BookName']
         author = data['Author']
-        rating = float(data['Rating'])  # Ensure rating is a float
+        rating = float(data['Rating'])
 
-        # CREATE RECORD
-        with app.app_context():
-            new_book = Book(title=book_name, author=author, rating=rating)
-            db.session.add(new_book)
-            db.session.commit()
-            
+        # Create a new book record
+        new_book = Book(title=book_name, author=author, rating=rating)
+        db.session.add(new_book)
+        db.session.commit()
+
         return redirect(url_for('home'))
-    
+
     return render_template('add.html')
+
+@app.route("/edit/<int:id>", methods=['GET', 'POST'])
+def edit(id):
+    form = RatingForm()
+    book_to_update = Book.query.get_or_404(id)
+
+    if request.method == 'POST':
+        book_to_update.rating = form.rating.data
+        db.session.commit()
+        return redirect(url_for('home'))
+
+    return render_template('edit.html', form=form, book=book_to_update)
+
+@app.route('/delete/<int:id>')
+def delete(id):
+    book_to_delete = Book.query.get_or_404(id)
+    db.session.delete(book_to_delete)
+    db.session.commit()
+    return redirect(url_for('home'))
 
 if __name__ == "__main__":
     app.run(debug=True)

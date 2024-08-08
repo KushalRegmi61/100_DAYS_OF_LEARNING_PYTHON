@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <title>Library</title>
     {{ bootstrap.load_css() }} 
-  </head>
-  <body>
+</head>
+<body>
     <h1>My Library</h1>
-    <ul>
-      <li></li>
-    </ul>
-    
-    <div class="container">
-    <ul>
-      {%if not books: %}
-          <p>Library is empty</p>
-      {%else:%}
-          {%for book in books:%}
-            <li> {{book['author']}}, {{book['title']}}- {{book['rating']}}/10 </li>
-          {%endfor%}
-      {%endif%}
 
-    </ul>
-  </div>
+    <div class="container">
+        <ul>
+            {% if not books %}
+                <p>Library is empty</p>
+            {% else %}
+                {% for book in books %}
+                
+                    <li><a href="{{ url_for('delete', id=book['id']) }}">Delete </a>
+                        <input hidden="hidden" name="id" value="{{book.id}}">
+                        {{ book['author'] }}, {{ book['title'] }} - {{ book['rating'] }}/10
+                        <a href="{{ url_for('edit', id=book['id']) }}">Edit Rating </a>
+                    </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </div>
 
     <div class="col text-left">
-      <a class="btn btn-warning btn-lg" href="{{url_for('add')}}" role="button">Add Books!</a>
-  </div>
-  {{ bootstrap.load_js() }}
+        <a class="btn btn-warning btn-lg" href="{{ url_for('add') }}" role="button">Add Books!</a>
+    </div>
 
-  </body>
+    {{ bootstrap.load_js() }}
+
+</body>
 </html>
