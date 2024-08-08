@@ -4,3 +4,5 @@
 .cache
 test.py
 /.venv
+/instance
+/New folder

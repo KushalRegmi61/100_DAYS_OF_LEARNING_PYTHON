@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Library</title>
+    {{ bootstrap.load_css() }} 
+  </head>
+  <body>
+    <h1>My Library</h1>
+    <ul>
+      <li></li>
+    </ul>
+    
+    <div class="container">
+    <ul>
+      {%if not books: %}
+          <p>Library is empty</p>
+      {%else:%}
+          {%for book in books:%}
+            <li> {{book['author']}}, {{book['title']}}- {{book['rating']}}/10 </li>
+          {%endfor%}
+      {%endif%}
+
+    </ul>
+  </div>
+
+    <div class="col text-left">
+      <a class="btn btn-warning btn-lg" href="{{url_for('add')}}" role="button">Add Books!</a>
+  </div>
+  {{ bootstrap.load_js() }}
+
+  </body>
+</html>
