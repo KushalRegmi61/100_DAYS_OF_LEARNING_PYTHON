@@ -19,7 +19,7 @@ import time
 
 
 # Path to your ChromeDriver executable
-webdriver_path = 'C:\\Program Files\\Google\\Chrome_Driver\\chromedriver.exe'
+webdriver_path = '/usr/local/bin/chromedriver'
 
 #website links and headers
 googleForm_link="https://forms.gle/ViQztU7SdT8aweRa6"
