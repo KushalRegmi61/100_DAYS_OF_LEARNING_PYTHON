@@ -69,7 +69,7 @@ def add_cafe():
             form.wifiRating.data, 
             form.powerOutlet.data
         ]
-        with open(r"DAY_62_Coffee_\cafe-data.csv", encoding='utf-8', mode='a') as csv_file:
+        with open(r"DAY_62_CoffeeShops_Location_Webiste/cafe-data.csv", encoding='utf-8', mode='a') as csv_file:
             writer = csv.writer(csv_file)
             # writing new_row 
             writer.writerow(new_row)
@@ -78,7 +78,7 @@ def add_cafe():
 
 @app.route('/cafes')
 def cafes():
-    with open(r"DAY_62_Coffee_\cafe-data.csv", newline='', encoding='utf-8') as csv_file:
+    with open(r"DAY_62_CoffeeShops_Location_Webiste/cafe-data.csv", newline='', encoding='utf-8') as csv_file:
         csv_data = csv.reader(csv_file, delimiter=',')
         list_of_rows = []
         for row in csv_data:
