@@ -64,7 +64,7 @@ def edit(id):
     form = RatingForm()
     book_to_update = Book.query.get_or_404(id)
 
-    if request.method == 'POST':
+    if form.validate_on_submit():
         book_to_update.rating = form.rating.data
         db.session.commit()
         return redirect(url_for('home'))
