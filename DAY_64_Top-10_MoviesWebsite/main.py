@@ -9,6 +9,10 @@ from wtforms.validators import DataRequired, NumberRange
 import requests
 from flask_wtf import FlaskForm
 
+
+ACCESS_TOKEN='eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzQ0MDhhMGI4ODJjNjUwOGM5ZTJlZjg1MTZjMDQ5ZiIsIm5iZiI6MTcyMzU5NTQxOC41MTQ5NTksInN1YiI6IjY2YmJmOTgyMWVlYjA3YzY5ODY2NDM4NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.3XnrEjyugd2c4h4EGEI7tsE_0J4t2jo0IL26Zxs2gVg'
+
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 Bootstrap5(app)
@@ -17,6 +21,7 @@ Bootstrap5(app)
     #     DataRequired(message="Rating cannot be empty."),
     #     NumberRange(min=0, max=10, message="Rating must be between 0 and 10.")
     # ])
+
 #Edit Movie Rating Form:
 class EditRating(FlaskForm):
     rating=FloatField('Your rating out of 10, Eg: 7.5', 
@@ -26,6 +31,11 @@ class EditRating(FlaskForm):
                                 ])
     review= StringField("Your review.", validators=[DataRequired(message="Field cannot be empty.")])
     submit= SubmitField('Update', render_kw={"size":30})
+
+#Movie Title rating form
+class MovieForm(FlaskForm):
+    title=StringField("Movie Title", validators=[DataRequired()])
+    submit= SubmitField("Add Movie", render_kw={"size":30})
 
 ##CREATE DB
 class Base(DeclarativeBase):
@@ -75,17 +85,20 @@ with app.app_context():
 #     db.session.add(second_movie)
 #     db.session.commit()
 
-
+#TODO METHOD TO RENDER HOMEPAGE OF THE WEBSITE
 @app.route("/")
 def home():
     result = db.session.execute(db.select(Movie))
     all_movies = result.scalars().all()
     return render_template("index.html", movies=all_movies)
 
-@app.route("/edit/<int:id>", methods=['POST', 'GET'])
-def edit(id):
+
+#TODO METHOD TO EDIT A MOVIE FROM THE DATABASE
+@app.route("/edit_movie", methods=['POST', 'GET'])
+def edit():
+    movie_id = request.args.get("id")
     form = EditRating()
-    item_to_update= Movie.query.get_or_404(id)
+    item_to_update= db.get_or_404(Movie, movie_id)
     
     if form.validate_on_submit():
         item_to_update.rating=form.rating.data
@@ -95,6 +108,27 @@ def edit(id):
         return redirect(url_for('home'))
 
     return render_template('edit.html', form = form)
+
+#TODO METHOD TO DELETE A MOVIE FROM THE DATABASE
+@app.route("/delete/<int:id>")
+def delete(id):
+     
+    item_to_delete=Movie.query.get_or_404(id) #item_to_update= db.get_or_404(Movie, movie_id)
+    db.session.delete(item_to_delete)
+    db.session.commit()
+
+    return redirect(url_for('home'))
+
+#TODO method to add a movie to the database
+@app.route("/add_movie" , methods=['POST', 'GET'])
+def add_movie():
+    form = MovieForm()
+
+    if form.validate_on_submit():
+        movie_title=form.title.data
+
+    return render_template('add.html', form =form)    
+
 
 if __name__ == '__main__':
     app.run(debug=True)
