@@ -8,14 +8,62 @@ from wtforms import StringField, SubmitField, FloatField
 from wtforms.validators import DataRequired, NumberRange
 import requests
 from flask_wtf import FlaskForm
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+MOVIE_DB_API_KEY=os.getenv('MOVIE_IDB_API_KEY')
+MOVIE_DB_SEARCH_URL="https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1"
+
+# def search_movie(movie_name):
+#     # Define the base URL for the API
+#     base_url = "https://api.themoviedb.org/3/search/movie"
 
 
-ACCESS_TOKEN='eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzQ0MDhhMGI4ODJjNjUwOGM5ZTJlZjg1MTZjMDQ5ZiIsIm5iZiI6MTcyMzU5NTQxOC41MTQ5NTksInN1YiI6IjY2YmJmOTgyMWVlYjA3YzY5ODY2NDM4NyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.3XnrEjyugd2c4h4EGEI7tsE_0J4t2jo0IL26Zxs2gVg'
+#     # Define parameters for the request
+#     params = {
+#         "include_adult": "false",
+#         "language": "en-US",
+#         "page": "1",
+#         "query": movie_name
+#     }
+
+#     # Define headers with authorization token
+#     headers = {
+#         "accept": "application/json",
+#         "Authorization": f"Bearer {os.getenv('ACCESS_TOKEN')}"
+#     }
+
+#     # Send the GET request with parameters
+#     response = requests.get(base_url, headers=headers, params=params)
+
+#     # Print the response text
+#     data = response.json()
+
+#     movies = data['results']
+#     movie_list = []
+
+#     for movie in movies:
+#         title = movie['title']
+#         release_date = movie.get('release_date', 'Unknown Release Date')
+#         # Format the release date to just the year if possible
+#         year = release_date if release_date else 'Unknown Year'
+#         movie_list.append(f"{title} : {year}")
+
+#     return movie_list
+
+# def find_movie(movie_name):
+
+
+
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 Bootstrap5(app)
+
 
     # rating = FloatField('Rating', validators=[
     #     DataRequired(message="Rating cannot be empty."),
@@ -126,8 +174,39 @@ def add_movie():
 
     if form.validate_on_submit():
         movie_title=form.title.data
+        response = requests.get(MOVIE_DB_SEARCH_URL, params={"api_key": MOVIE_DB_API_KEY, "query": movie_title})
+        data = response.json()["results"]
+        print(response.json())
 
+        return render_template("select.html", options=data)
+    
     return render_template('add.html', form =form)    
+ 
+@app.route("/search")
+def search():
+    movie_id = request.args.get('movie_id')
+    print(movie_id)
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?language=en-US"
+    headers = {
+    "accept": "application/json",
+    "Authorization": f"Bearer {os.getenv('ACCESS_TOKEN')}"
+    }
+
+    response = requests.get(url, headers=headers)
+    movie_data=response.json()    
+    # Extracting required data
+    title = movie_data.get('title')
+    poster_path = movie_data.get('poster_path')
+    release_date = movie_data.get('release_date')
+    description = movie_data.get('overview')
+    # Formatting the data
+    img_url = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else None
+    year = release_date.split('-')[0] if release_date else 'Unknown Year'
+
+    print(title, release_date, description, year)
+
+    return redirect(url_for('home'))
+
 
 
 if __name__ == '__main__':
