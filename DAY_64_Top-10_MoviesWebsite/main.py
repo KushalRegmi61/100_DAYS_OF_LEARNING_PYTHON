@@ -59,8 +59,14 @@ with app.app_context():
 # Homepage Route
 @app.route("/")
 def home():
-    result = db.session.execute(db.select(Movie))
+    result = db.session.execute(db.select(Movie).order_by(Movie.rating.desc()))
     all_movies = result.scalars().all()
+    #update ranking of the movie
+    for i in range(len(all_movies)):
+        all_movies[i].ranking = i+1
+
+    db.session.commit()
+
     return render_template("index.html", movies=all_movies)
 
 # Edit Movie Route
