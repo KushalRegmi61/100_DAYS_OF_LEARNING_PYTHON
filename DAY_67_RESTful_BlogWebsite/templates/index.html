@@ -1,16 +1,13 @@
 {% include "header.html" %}
 
 <!-- Page Header-->
-<header
-  class="masthead"
-  style="background-image: url('../static/assets/img/home-bg.jpg')"
->
+<header class="masthead" style="background-image: url('{{ url_for('static', filename='assets/img/edit-bg.jpg') }}')">
   <div class="container position-relative px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
         <div class="site-heading">
-          <h1>Clean Blog</h1>
-          <span class="subheading">A Blog Theme by Start Bootstrap</span>
+          <h1>Kushal's Blog</h1>
+          <span class="subheading"></span>
         </div>
       </div>
     </div>
@@ -30,9 +27,9 @@
         <!-- TODO: Add code to delete posts below -->
         <p class="post-meta">
           Posted by
-          <a href="#">{{post.author}}</a>
-          on {{post.date}}
+          {{post.author}} on {{post.date}}
         </p>
+        <a class="btn btn-secondary float-right" href="{{ url_for('delete_post', post_id=post.id) }}">Delete Post</a>
       </div>
       <!-- Divider-->
       <hr class="my-4" />
@@ -40,17 +37,13 @@
 
       <!-- New Post -->
       <div class="d-flex justify-content-end mb-4">
-      <!-- TODO: Adding new posts -->
-        <a
-          class="btn btn-primary float-right"
-          href="TODO: add code to add_new_post here"
-          >Create New Post</a
-        >
+        <!-- TODO: Adding new posts -->
+        <a class="btn btn-primary float-right" href="{{url_for('add_new_post')}}">Create New Post</a>
       </div>
 
       <!-- Pager-->
       <div class="d-flex justify-content-end mb-4">
-        <a class="btn btn-secondary text-uppercase" href="#!">Older Posts →</a>
+        <a class="btn btn-secondary text-uppercase" href="{{url_for('older_post')}}">Older Posts →</a>
       </div>
     </div>
   </div>
