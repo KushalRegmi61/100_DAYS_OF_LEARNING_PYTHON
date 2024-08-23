@@ -41,3 +41,6 @@ class LoginForm(FlaskForm):
 
 
 # TODO: Create a CommentForm so users can leave comments below posts
+class CommentForm(FlaskForm):
+    body = CKEditorField('Comment', validators=[DataRequired()])
+    submit = SubmitField(label='Post Comment', render_kw={'size':30})
