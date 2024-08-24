@@ -44,3 +44,5 @@ class LoginForm(FlaskForm):
 class CommentForm(FlaskForm):
     body = CKEditorField('Comment', validators=[DataRequired()])
     submit = SubmitField(label='Post Comment', render_kw={'size':30})
+
+
