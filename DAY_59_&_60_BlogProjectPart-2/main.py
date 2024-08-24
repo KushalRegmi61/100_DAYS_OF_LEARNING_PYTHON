@@ -6,8 +6,10 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-email=os.getenv('my_email')
-password=os.getenv('my_password')
+EMAIL=os.getenv('my_email')
+PASSWORD=os.getenv('EMAIL_PASSWORD')
+
+
 
 current_year = datetime.datetime.now().year
 today_date = datetime.datetime.now().strftime('%d %B')
@@ -57,12 +59,9 @@ def contact():
         #sending email....
         with smtplib.SMTP('smtp.gmail.com') as connection:
             connection.starttls()
-            connection.login(user=email, password=password)
+            connection.login(user=EMAIL, password=PASSWORD)
             connection.sendmail(from_addr=email, to_addrs="kushalbro82@gmail.com", msg=msg_data)
-        # with smtplib.SMTP("smtp.gmail.com") as connection:
-        #     connection.starttls()
-        #     connection.login(user  = email, password=password)
-        #     connection.sendmail(from_addr=email, to_addrs="kushalbro82@gmail.com",msg=msg_data)
+
             
         return render_template("contact.html", msg_sent=True)
     return render_template("contact.html", msg_sent=False)
