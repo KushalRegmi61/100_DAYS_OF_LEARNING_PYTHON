@@ -36,7 +36,7 @@ def admin_only(f):
 
 # TODO: Initializing Flask app and extensions
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.getenv('FLASK_KEY')
 app.config['GRAVATAR_SIZE'] = 30
 app.config['GRAVATAR_RATING'] = 'g'  
 app.config['GRAVATAR_DEFAULT'] = 'retro'  
