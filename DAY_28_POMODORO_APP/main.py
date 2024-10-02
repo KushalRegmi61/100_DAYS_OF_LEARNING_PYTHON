@@ -1,5 +1,7 @@
 import math
 from tkinter import *
+from PIL import Image, ImageTk 
+
 # ---------------------------- CONSTANTS ------------------------------- #
 PINK = "#e2979c"
 RED = "#e7305b"
@@ -68,7 +70,8 @@ label_1.grid(row= 0, column= 1)
 # Set the window background color to yellow
 window.config(padx= 50, pady=50, bg=YELLOW)
 #crating a variable that store the tomato_image
-tomato_img =PhotoImage(file= r"DAY_28\tomato.png")
+image = Image.open(r"DAY_28_POMODORO_APP/tomato.png")
+tomato_img =ImageTk.PhotoImage(image)
 #crating a canvas object
 canvas = Canvas(width= 300, height= 300,bg = YELLOW, highlightthickness= 0)
 #adding tomato image to the screen
