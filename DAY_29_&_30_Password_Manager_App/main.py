@@ -1,8 +1,15 @@
 from tkinter import *
 from tkinter import messagebox
+from tkinter import PhotoImage
 import random
 import pyperclip
 import json
+from PIL import Image, ImageTk 
+
+
+
+
+
 # ---------------------------- GENERATE PASSWORD ------------------------------- #
 #Password Generator Project
 def generate_password():
@@ -43,17 +50,17 @@ def save_password():
         if user_choice:
             # Opening the file to load json data
             try:
-                with open("DAY_29_&_30_Password_Manager_App\data.json", "r") as data_file: 
+                with open("../data.json", "r") as data_file: 
                     data = json.load(data_file)
                     
                     
             except  FileNotFoundError:
             #dumping the updated data
-                    with open("DAY_29_&_30_Password_Manager_App\data.json", "w") as data_file: 
+                    with open("../data.json", "w") as data_file: 
                         json.dump(new_data, data_file, indent=4)  
             else:
                 data.update(new_data)#updating the data
-                with open("DAY_29_&_30_Password_Manager_App\data.json", "w") as data_file: 
+                with open("../data.json", "w") as data_file: 
                     json.dump(data, data_file, indent=4)  
             finally:                   
         # Clear input fields after data is saved
@@ -63,7 +70,7 @@ def save_password():
 # ---------------------------- SEARCH PASSWORD ------------------------------- #
 def find_password():
     try:
-        with open(r"DAY_29_&_30_Password_Manager_App\data.json", "r") as data_fie:
+        with open(r"../data.json", "r") as data_fie:
             data = json.load(data_fie)
     
     except FileNotFoundError as error_message:
@@ -83,7 +90,10 @@ window.title("Password Manager!!!")
 window.config(padx=50, pady=50)
 
 # Provide the correct file path to the image
-photo = PhotoImage(file=r"DAY_29_&_30_Password_Manager_App\logo.png")
+# photo = PhotoImage(file=r"/home/mr-kush/python/DAY_29_&_30_Password_Manager_App/logo.png")
+#creating photo 
+image = Image.open("/home/mr-kush/python/DAY_29_&_30_Password_Manager_App/logo.png")
+photo = ImageTk.PhotoImage(image)
 
 canvas = Canvas(window, height=200, width=200, highlightthickness=0)
 canvas.create_image(100, 100, image=photo)
