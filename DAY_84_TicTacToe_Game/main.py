@@ -29,10 +29,20 @@ title_label.grid(row=0, column=1, columnspan=3)
 #creating a game_tied function  
 def game_tied():
     global x_state, o_state
-    if x_state.count(1) + o_state.count(1) == 9: #count 1's in x_state and o_state
+        
+    if x_state.count(1) + o_state.count(1) == 9: 
+        #count 1's in x_state and o_state
         title_label.config(text="Game Tied")
-        for i in button_list:
-            i.config(command=DISABLED)
+
+        #modifying the label_text
+        for i in winning_list:
+            if x_state[i[0]] and x_state[i[1]] and x_state[i[2]]:
+                title_label.config(text="X wins")
+
+            if o_state[i[0]] and o_state[i[1]] and o_state[i[2]]:
+                title_label.config(text="O wins")        
+
+
 
 
 #creating a button list
@@ -81,7 +91,7 @@ def check_winner(x_state, o_state):
             return 1
         if o_state[i[0]] and o_state[i[1]] and o_state[i[2]]:
             title_label.config(text="O wins")
-            printboard(x_state, o_state)
+            # printboard(x_state, o_state)
             printboard(x_state, o_state)
             return 0
         
