@@ -48,8 +48,13 @@ class UI:
         self.add_text_button.grid(row=0, column=0)
 
         # Add logo button
-        self.add_logo_button = Button(text="Add Logo", width=10, height=2, font=("Times New Roman", 13, "bold"))
-        self.add_logo_button.grid(row=0, column=1)
+        # self.add_logo_button = Button(text="Add Logo", width=10, height=2, font=("Times New Roman", 13, "bold"))
+        # self.add_logo_button.grid(row=0, column=1)
+
+
+        # Preview Image button
+        self.preview_button = Button(text="Preview IMG", width=10, height=2, font=("Times New Roman", 13, "bold"), command=self.preview)
+        self.preview_button.grid(row=0, column=1)
 
         # Quit button
         self.quit_button = Button(text="Quit", command=self.quit, width=10, height=2, font=("Times New Roman", 13, "bold"))
@@ -70,9 +75,6 @@ class UI:
         self.add_image_button = Button(text="Add Image", command=self.add_image, width=10, height=2, font=("Times New Roman", 13, "bold"))
         self.add_image_button.grid(row=2, column=0)
 
-        # Preview Image button
-        self.preview_button = Button(text="Preview IMG", width=10, height=2, font=("Times New Roman", 13, "bold"), command=self.preview)
-        self.preview_button.grid(row=2, column=1)
 
         # Cancel button
         self.cancel_button = Button(text="Cancel", width=10, height=2, font=("Times New Roman", 13, "bold"), command=self.cancel)
@@ -82,9 +84,6 @@ class UI:
         self.save_button = Button(text="Save", width=10, height=2, font=("Times New Roman", 13, "bold"), command=self.save)
         self.save_button.grid(row=2, column=5)
 
-
-
-
         # Start the Tkinter main loop
         self.root.mainloop()
 
@@ -92,8 +91,8 @@ class UI:
     def create_text(self):
                 #creating a canvas for logo
         self.logo_text = self.canvas.create_text(
-                                    100,
-                                    100,
+                                    200,
+                                    200,
                                     width=200, 
                                     fill="black",
                                    )
@@ -109,7 +108,8 @@ class UI:
         # Bind mouse events for moving the logo text
         self.canvas.tag_bind(self.logo_text, '<ButtonPress-1>', self.on_button_press)
         self.canvas.tag_bind(self.logo_text, '<B1-Motion>', self.on_mouse_drag)
-        self.canvas.tag_bind(self.logo_text, '<ButtonRelease-1>', self.on_button_release)   
+        self.canvas.tag_bind(self.logo_text, '<ButtonRelease-1>', self.on_button_release) 
+
 
 #TODO: Add functionality to add text to the canvas
     def add_text(self):
@@ -153,29 +153,35 @@ class UI:
         self.cancel_button.grid(row=5, column=1, pady=10)
 
 
-#TODO: Add functionality to apply the selected text properties to the canvas
+
+# TODO: Add functionality to apply the selected text properties to the canvas
     def apply_text(self):
-        global TEXT, FONT_PROPERTIES, TEXT_COLOR
-        TEXT = self.entry.get()
+        # Fetch the text from the entry widget
+        self.TEXT = self.entry.get()
         
-        # Changing the Add Text button label when the text is added
-        if TEXT:
+        # Update the Add/Edit Text button label based on text presence
+        if self.TEXT:
             self.add_text_button.config(text="Edit Text")
             self.text_window.title("Edit Text")
-
         else:
             self.add_text_button.config(text="Add Text")
             self.text_window.title("Add Text")
 
-        FONT_PROPERTIES = [self.selected_font_family.get(), self.font_size.get()]
-        TEXT_COLOR = self.font_color.get()
+        # Update font properties and color based on user selection
+        self.FONT_PROPERTIES = [self.selected_font_family.get(), self.font_size.get()]
+        self.TEXT_COLOR = self.font_color.get()
 
-        # Load the selected custom font
-        font_path = self.FONTS[FONT_PROPERTIES[0]]
-        font = ImageFont.truetype(font_path, FONT_PROPERTIES[1])  # This will ensure the font is loaded correctly
+        # Load the selected custom font for PIL use
+        font_path = self.FONTS.get(self.FONT_PROPERTIES[0], None)
+        if font_path:
+            self.font = ImageFont.truetype(font_path, self.FONT_PROPERTIES[1])
 
-        # Update canvas text to use custom font
-        self.canvas.itemconfig(self.logo_text, text=TEXT, font=(FONT_PROPERTIES[0], FONT_PROPERTIES[1]), fill=TEXT_COLOR)
+        # Update the canvas text item with the selected properties
+        # x = self.new_width // 2
+        # y = self.new_height // 2
+        # self.canvas.coords(self.logo_text, x, y)
+        self.canvas.itemconfig(self.logo_text, text=self.TEXT, font=(self.FONT_PROPERTIES[0], self.FONT_PROPERTIES[1]), fill=self.TEXT_COLOR)
+
 
 #TODO: Add functionality to add a logo to the canvas
     def add_logo(self):
@@ -205,30 +211,30 @@ class UI:
 
             # Calculate new dimensions while respecting the aspect ratio and maximum sizes
             if aspect_ratio > 1:  # Landscape orientation
-                new_width = min(max_canvas_width, IMG_WIDTH)
-                new_height = int(new_width / aspect_ratio)
-                if new_height > max_canvas_height:
-                    new_height = max_canvas_height
-                    new_width = int(new_height * aspect_ratio)
+                self.new_width = min(max_canvas_width, IMG_WIDTH)
+                self.new_height = int(self.new_width / aspect_ratio)
+                if self.new_height > max_canvas_height:
+                    self.new_height = max_canvas_height
+                    self.new_width = int(self.new_height * aspect_ratio)
             else:  # Portrait orientation or square
-                new_height = min(max_canvas_height, IMG_HEIGHT)
-                new_width = int(new_height * aspect_ratio)
-                if new_width > max_canvas_width:
-                    new_width = max_canvas_width
-                    new_height = int(new_width / aspect_ratio)
+                self.new_height = min(max_canvas_height, IMG_HEIGHT)
+                self.new_width = int(self.new_height * aspect_ratio)
+                if self.new_width > max_canvas_width:
+                    self.new_width = max_canvas_width
+                    self.new_height = int(self.new_width / aspect_ratio)
 
             # Calculate the multipliers for resizing the image
-            h_multiplier = IMG_HEIGHT / new_height
-            w_multiplier = IMG_WIDTH / new_width
+            h_multiplier = IMG_HEIGHT / self.new_height
+            w_multiplier = IMG_WIDTH / self.new_width
 
             # Resize the image to maintain the aspect ratio
-            resized_image = self.image.resize((new_width, new_height), Image.LANCZOS)
+            resized_image = self.image.resize((self.new_width, self.new_height), Image.LANCZOS)
 
             # Clear any existing content on the canvas
             self.canvas.delete("all")
 
             # Adjust canvas size to match the resized image size
-            self.canvas.config(width=new_width, height=new_height)
+            self.canvas.config(width=self.new_width, height=self.new_height)
 
             # Convert resized image to PhotoImage and store in instance attribute
             self.tk_image = ImageTk.PhotoImage(resized_image)
@@ -236,13 +242,15 @@ class UI:
             # Display the image on the canvas as the background
             self.canvas.create_image(0, 0, anchor='nw', image=self.tk_image)
 
+            #update the logo_text canvas
+
             # Adjust the main window size to fit the resized image size
             # self.root.pack_propagate(False)  # Prevent window from resizing to the canvas size
             # self.root.update_idletasks()  # Ensure all geometry requests are processed
 
             # # Set window size with padding
             # window_width = new_width + 50 # Add padding
-            # window_height = new_height + 100 # Add padding
+            # window_height = self.new_height + 100 # Add padding
             # self.root.geometry(f"{window_width}x{window_height}")
 
             # # Optionally center the window on the screen
@@ -256,10 +264,10 @@ class UI:
             # print(f"New Width: {new_width}, New Height: {new_height}")
 
 
-#TODO: Add functionality to save the canvas content as an image file
 
-    def save(self):
 
+#TODO: Method to draw the text on the image 
+    def draw_text(self):
         # Font setup for the text
         # font_family = f"fonts/{FONT_PROPERTIES[0].lower().replace(' ', '_')}.ttf"  # Convert to lowercase, handle spaces
         font_family = self.FONTS.get(FONT_PROPERTIES[0])
@@ -272,7 +280,7 @@ class UI:
 
         try:
             # Load the font
-            font = ImageFont.truetype(font_family, font_size)
+            self.font = ImageFont.truetype(font_family, font_size)
         except IOError:
             messagebox.showerror("Error", f"Font file '{font_family}' not found.")
             return
@@ -283,7 +291,14 @@ class UI:
         y_cor = int(y * h_multiplier)
 
         # Draw the text on the image
-        self.draw.text((x_cor, y_cor), TEXT, fill=TEXT_COLOR, font=font)
+        self.draw.text((x_cor, y_cor), TEXT, fill=TEXT_COLOR, font=self.font)
+
+
+#TODO: Add functionality to save the canvas content as an image file
+
+    def save(self):
+
+        self.draw_text()
 
         # Create a window to prompt the user to enter a filename for saving
         save_window = Toplevel()
@@ -321,6 +336,7 @@ class UI:
 
 #TODO: Add functionality to preview the image with the watermark
     def preview(self):
+        self.draw_text()
         self.opened_image.show()
 
 
