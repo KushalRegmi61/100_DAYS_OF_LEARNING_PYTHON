@@ -172,3 +172,5 @@ cython_debug/
 
 tempCodeRunnerFile.py
 .gitignore
+tempCodeRunnerFile.py
+/__pycache__
