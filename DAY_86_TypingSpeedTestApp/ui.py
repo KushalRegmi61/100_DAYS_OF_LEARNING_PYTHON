@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+import random
 
 #global variables
 THEME_COLOR = "#375362"
@@ -22,7 +23,28 @@ class TypingSpeedTestApp:
 
 
         #creating a list 
-        self.QUOTES = ["The quick brown fox jumps over the lazy dog"]
+        self.QUOTES = [
+    "Success is not final, failure is not fatal: It is the courage to continue that counts. The key to growth is the introduction of higher dimensions of consciousness into our awareness, bringing forth wisdom and resilience in the face of life's challenges.",
+    
+    "Life is not measured by the number of breaths we take, but by the moments that take our breath away. Each day is a blank canvas, an opportunity to paint with the colors of hope, perseverance, and the courage to dream without limits.",
+    
+    "Twenty years from now, you will be more disappointed by the things you didn’t do than by the ones you did do. So throw off the bowlines, sail away from the safe harbor, and catch the trade winds in your sails. Explore. Dream. Discover.",
+    
+    "Happiness is not about getting everything you want; it’s about loving what you have and being grateful for it. Appreciate the beauty in small moments, the warmth of friendship, and the kindness we extend to others, for these are the true treasures of life.",
+    
+    "The only way to discover the limits of the possible is to go beyond them into the impossible. True growth comes from embracing the unknown, daring to step into unfamiliar terrain, and finding strength in vulnerability along the way.",
+    
+    "The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to make a difference that you have lived and lived well. In doing so, we create a legacy that resonates in the hearts of those who follow.",
+    
+    "It is our choices that show what we truly are, far more than our abilities. In the face of adversity, it is our character, resilience, and willingness to rise that define our journey and ultimately illuminate the path forward.",
+    
+    "Don't watch the clock; do what it does. Keep going. Persistence is the vehicle you arrive in, fueled by determination and guided by purpose. Every small step, no matter how insignificant it may seem, contributes to the grand tapestry of achievement.",
+    
+    "We are what we repeatedly do. Excellence, then, is not an act, but a habit. Cultivate a daily practice of gratitude, kindness, and patience, for these small actions lay the foundation for a life of fulfillment and purpose.",
+    
+    "In the end, it's not the years in your life that count. It's the life in your years. Make each day count, finding joy in the journey, courage in the challenges, and meaning in the connections that weave together the story of who we are."
+]
+
 
 
         #creating the highest score label 
@@ -45,8 +67,15 @@ class TypingSpeedTestApp:
         self.text_canvas = Canvas(self.root, bg="white", width=1200, height=200)
         self.text_canvas.grid(row=1, column=0, padx=10, pady=10, columnspan=7)
         
-        #displaying the text
-        self.demo_text=self.text_canvas.create_text(600, 100, text="Press Start Button to Begin.", font=("Times New Roman", 18, "bold"))
+        # Canvas to display the text with wrapping enabled
+        self.text_canvas = Canvas(self.root, bg="white", width=1200, height=200)
+        self.text_canvas.grid(row=1, column=0, padx=10, pady=10, columnspan=7)
+        
+        # Display placeholder text with center alignment and wrapping
+        self.demo_text = self.text_canvas.create_text(
+            600, 100, text="Press Start Button to Begin.", font=("Times New Roman", 18, "bold"),
+            width=1100, anchor="center", justify="center"  # Limit width and center-align text
+        )
 
         #creating the text widget
         self.text_widget = Text(self.root, font=("Times New Roman", 18, "bold"), wrap=WORD, width=100, height=10, state=DISABLED)
@@ -66,23 +95,23 @@ class TypingSpeedTestApp:
         self.text_widget.config(state=NORMAL)
         self.text_widget.delete("1.0", END)
 
-        #getting hold of start_button text
+        # Get the current text of the start button
         self.start_text = self.start_button.cget("text")
-        
-        #fixing the timer 
+
+        # Handle timer reset when restarting
         if self.start_text == "Restart" and self.repeat == 1:
             self.submit_text()
 
         # Change the start button text to "Restart"
         self.start_button.config(text="Restart")
         
-        # Set the text for the typing test
-        self.TEXT = self.QUOTES[0]
-        self.text_canvas.itemconfig(self.demo_text, text=self.QUOTES[0])
+        # Select a random quote from self.QUOTES for the typing test
+        self.TEXT = random.choice(self.QUOTES)
+        self.text_canvas.itemconfig(self.demo_text, text=self.TEXT)
         
         # Reset timer variables
         global TIME
-        TIME = 20
+        TIME = 60
         self.net_time = TIME
         self.timer_label.config(text=f"Timer: {TIME} Sec")
         
@@ -134,24 +163,23 @@ class TypingSpeedTestApp:
     #TODO: METHOD TO CALCULAAT THE ACCURACY 
     def calculate_accuracy(self):
         # Get the provided text and the typed text
-        original_text = self.TEXT
-        typed_text = self.text_widget.get("1.0", END).strip()
-        
+        original_text = self.TEXT.strip()  # Original text
+        typed_text = self.text_widget.get("1.0", END).strip()  # Typed text
+
+        # Print the typed text for debugging purposes
+        print("Typed text:", typed_text)
+
         # Calculate the total number of characters typed
         total_characters_typed = len(typed_text)
-        
+
         # Initialize a counter for correct characters
-        correct_characters = 0
-        
-        # Count correct characters (up to the length of the typed text or original text, whichever is shorter)
-        for i in range(min(len(original_text), total_characters_typed)):
-            if typed_text[i] == original_text[i]:
-                correct_characters += 1
-        
-        # Calculate accuracy (if no characters are typed, accuracy is 0)
-        accuracy = (correct_characters / total_characters_typed) * 100 if total_characters_typed > 0 else 0
+        correct_characters = sum(1 for i in range(min(len(original_text), total_characters_typed))
+                                if typed_text[i] == original_text[i])
+
+        # Calculate accuracy as a percentage
+        accuracy = (correct_characters / len(original_text)) * 100 if len(original_text) > 0 else 0
         return round(accuracy, 2)
-    
+
 
     #TODO: METHOD TO WORK WHEN THE SUBBMIT BUTTON IS CLICKED
     def submit_text(self):
