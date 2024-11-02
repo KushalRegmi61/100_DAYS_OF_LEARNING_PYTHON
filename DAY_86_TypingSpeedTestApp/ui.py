@@ -5,7 +5,7 @@ import random
 #global variables
 THEME_COLOR = "#375362"
 TIME = 60
-HIGH_SCORE = 80
+HIGH_SCORE = 0
 
 class TypingSpeedTestApp:
     def __init__(self):
@@ -186,6 +186,15 @@ class TypingSpeedTestApp:
         # Calculate the WPM and accuracy
         wpm = self.calculate_wpm()
         accuracy = self.calculate_accuracy() 
+
+        # Update the highest score if the current WPM is higher
+        global HIGH_SCORE
+        HIGH_SCORE = int(self.read_text())
+
+        if wpm > HIGH_SCORE:
+            HIGH_SCORE = wpm
+            self.write_text(str(HIGH_SCORE))
+            self.highest_score_label.config(text=f"Highest Score: {HIGH_SCORE} WPM")
         
         # chaanging the self.repeat variable to 0
         self.repeat = 0
@@ -203,3 +212,16 @@ class TypingSpeedTestApp:
     def start_timer_once(self, event):
         self.text_widget.unbind("<KeyPress>")
         self.display_time()
+
+    #methdod to read the text from the file
+    def read_text(self):
+        with open("DAY_86_TypingSpeedTestApp/assets/score.txt", "r") as file:
+            text = file.read()
+            return text
+        
+    #method to write the text to the file
+    def write_text(self, text):
+        with open("DAY_86_TypingSpeedTestApp/assets/score.txt", "w") as file:
+            file.write(text)
+
+            
