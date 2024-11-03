@@ -48,7 +48,7 @@ class TypingSpeedTestApp:
 
 
         #creating the highest score label 
-        self.highest_score_label = Label(self.root, text=f"Highest Score: {HIGH_SCORE} WPM ", font=("Times New Roman", 18, "bold"))
+        self.highest_score_label = Label(self.root, text=f"Highest Score: {self.read_text()} WPM ", font=("Times New Roman", 18, "bold"))
         self.highest_score_label.grid(row=0, column=0, padx=10, pady=10)
 
         #creating the WPM label
