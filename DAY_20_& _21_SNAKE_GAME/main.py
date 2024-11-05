@@ -18,11 +18,12 @@ border.penup()
 border.goto(-300, -300)
 border.pendown()
 border.color("white")
-border.pensize(3)
-for i in range(4):
-    border.forward(600)
-    border.left(90)
-
+border.pensize(10)
+border.forward(600)
+border.penup()
+border.goto(-300, 300)
+border.pendown()
+border.forward(600)
 
 # Create Snake object
 snake = Snake()
@@ -92,8 +93,8 @@ while True:
 
         # Detect collision with walls
         if (
-            abs(snake.head.xcor()) > 300
-            or abs(snake.head.ycor()) > 280
+            abs(snake.head.xcor()) > 295
+            or snake.head.ycor() > 298 or snake.head.ycor() < -298
         ):
             score.reset()
             snake.reset()
