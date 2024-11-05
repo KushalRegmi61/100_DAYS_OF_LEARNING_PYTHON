@@ -1,4 +1,4 @@
-from turtle import Screen
+from turtle import Screen, Turtle
 from snake import Snake
 import time
 from food import Food
@@ -6,11 +6,23 @@ from scorecard import Scoreboard
 
 # Create Screen object
 screen = Screen()
-screen.setup(width=600, height=600)
+screen.setup(width=600, height=800)
 screen.bgcolor("black")
 screen.title("Snake Game...")
 screen.tracer(0)
 screen.listen()
+
+#creating a white broder at x= 300
+border = Turtle()
+border.penup()
+border.goto(-300, -300)
+border.pendown()
+border.color("white")
+border.pensize(3)
+for i in range(4):
+    border.forward(600)
+    border.left(90)
+
 
 # Create Snake object
 snake = Snake()
@@ -22,13 +34,30 @@ food = Food()
 score = Scoreboard()
 
 
+
+#creating notifiaction for the user
+notification = Turtle()
+
+def draw_notification():
+    notification.penup()
+    notification.hideturtle()
+    notification.color("white")
+    notification.goto(0,0)
+    notification.write("Press Space to start the game", align="center", font=("Courier", 24, "normal"))
+
+
+draw_notification()
 # Function to start the game
 def start_game():
     global is_game_on
     is_game_on = True
 
+    # Clear the notification
+    notification.clear()
+
 # Bind start_game function to spacebar key
 screen.onkey(start_game, "space")
+
 
 # Game loop
 while True:
@@ -63,12 +92,13 @@ while True:
 
         # Detect collision with walls
         if (
-            abs(snake.head.xcor()) > 290
-            or abs(snake.head.ycor()) > 290
+            abs(snake.head.xcor()) > 300
+            or abs(snake.head.ycor()) > 280
         ):
             score.reset()
             snake.reset()
             is_game_on = False  # End the game loop
+            draw_notification()
 
         # Detect collision with tail
         for segment in snake.segment[1:]:
