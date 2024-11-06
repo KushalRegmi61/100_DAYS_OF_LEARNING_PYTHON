@@ -1,10 +1,8 @@
 from turtle import Turtle
 import random
 
-
-class Brick(Turtle):
+class Brick:
     def __init__(self):
-        super().__init__()
         # Define starting coordinates for the grid
         self.start_x = -385
         self.start_y = 280
@@ -24,6 +22,7 @@ class Brick(Turtle):
         self.create_bricks()
 
     def create_bricks(self):
+        """Create a grid of bricks and add them to the bricks_list."""
         for row in range(self.num_rows):
             for col in range(self.num_columns):
                 brick = Turtle()
@@ -40,8 +39,21 @@ class Brick(Turtle):
                 # Add the brick to the list
                 self.bricks_list.append(brick)
 
-    # Function to remove a brick from the screen
     def remove_brick(self, brick):
-        brick.goto(1000, 1000)
-        self.bricks_list.remove(brick)
-        del brick
+        """Remove a specific brick from the screen and list."""
+        brick.hideturtle()
+        brick.goto(1000, 1000)  # Move it off-screen
+        if brick in self.bricks_list:
+            self.bricks_list.remove(brick)
+
+    def clear_bricks(self):
+        """Clear all bricks from the screen and empty the bricks_list."""
+        for brick in self.bricks_list:
+            brick.hideturtle()  # Hide each brick
+            brick.goto(1000, 1000)  # Move them off-screen to clear
+        self.bricks_list.clear()  # Clear the list
+
+    def reset_bricks(self):
+        """Reset the bricks by clearing existing ones and creating new ones."""
+        self.clear_bricks()
+        self.create_bricks()
