@@ -5,15 +5,17 @@ class Pedal(Turtle):
         super().__init__()
         self.shape("square")
         self.color("White")
-        self.shapesize(stretch_len=7, stretch_wid= 1)
+        self.shapesize(stretch_len=7, stretch_wid=1)
         self.penup()
         self.goto(position)
-    
-        # function to move the turtle left  and reight
+
     def move_left(self):
-        new_x = self.xcor()-20
+        new_x = max(self.xcor() - 20, -350)  # Prevent moving off the left side
         self.goto(new_x, self.ycor())
 
     def move_right(self):
-        new_x = self.xcor()+20
+        new_x = min(self.xcor() + 20, 350)  # Prevent moving off the right side
         self.goto(new_x, self.ycor())
+
+    def reset_position(self):
+        self.goto(0, -320)
