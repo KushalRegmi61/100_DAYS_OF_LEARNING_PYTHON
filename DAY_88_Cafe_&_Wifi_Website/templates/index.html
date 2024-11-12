@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block content%}
+
+<header class="intro text-center">
+  <div class="intro-background py-5" 
+       style="background-image: url('https://images.unsplash.com/photo-1581091012147-cc31b2ffb578'); background-size: cover; background-position: center;">
+    <div class="container">
+      <h1 class="heading mb-5 text-white">
+        Workspaces Beyond Walls
+      </h1>
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-8">
+          <p class="secheading mb-5 text-white">
+            Discover local spots to fuel your creativity and productivity.
+          </p>
+          <a class="btn btn-lg btn-success book-now mb-4" href="/cities">
+            Explore Nearby Work Spots
+          </a>
+          <p class="body-text my-4 text-white" style="text-align: center;">
+            Nothing nearby? Suggest a new place!
+          </p>
+          <a class="ambassador d-block mt-3 " style="text-align: center;" href="/suggest">
+            Add your favorite spot now!
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+
+<hr>
+
+<!-- What is LF? -->
+<div class="container text-center py-5" id="landing">
+  <section class="row text-center">
+      <div class="col-sm-4 xs-padding-top mb-4 mb-sm-0">
+          <i class="fa fa-fw fa-laptop fa-3x mb-3" style="color: #28a745;"></i>
+          <h3 class="subheading mb-3">Boost Productivity</h3>
+          <p class="body-text text-justify px-3 py-2" style="font-size: 1.1rem; line-height: 1.6; text-align: justify;">
+              Locate venues with dependable <strong>Wi-Fi</strong>, plenty of <strong>power outlets</strong>, and comfortable <strong>seating</strong>.
+          </p>
+      </div>
+      <div class="col-sm-4 xs-padding-top mb-4 mb-sm-0">
+          <i class="far fa-fw fa-smile fa-3x mb-3" style="color: #ff9f00;"></i>
+          <h3 class="subheading mb-3">Feel at Home</h3>
+          <p class="body-text text-justify px-3 py-2" style="font-size: 1.1rem; line-height: 1.6; text-align: justify;">
+              Find the <strong>optimal times to work</strong> based on community insights.
+          </p>
+      </div>
+      <div class="col-sm-4 xs-padding-top mb-4 mb-sm-0">
+          <i class="fa fa-fw fa-lightbulb fa-3x mb-3" style="color: #ffc107;"></i>
+          <h3 class="subheading mb-3">Stay Motivated</h3>
+          <p class="body-text text-justify px-3 py-2" style="font-size: 1.1rem; line-height: 1.6; text-align: justify;">
+              Discover new places with a <strong>relaxed atmosphere</strong> and <strong>friendly environment</strong>.
+          </p>
+      </div>
+  </section>
+</div>
+
+<!-- Community Section -->
+<hr>
+
+<div class="container text-center py-5" id="landing">
+<section class="row justify-content-center">
+    <div class="col-md-8">
+        <p class="body-text text-justify px-3 py-2" 
+           style=" line-height: 1.7; text-align: justify;">
+           LaptopFriendly partners with local <strong>spaces that promote remote work</strong>. 
+           Every venue is thoroughly reviewed and approved by our team before being included.
+        </p>
+    </div>
+</section>
+</div>
+
+
+
+
+    <!-- Community -->
+
+    <hr>
+    <div class="container text-center" id="landing">
+    
+        <section>
+            <h2 class="subheading py-4">How It Works</h2>
+            <div class="row">
+                <div class="col-sm-6 padding-top-40">
+                    <a href="/cities">
+                        <!-- New image source for Workspaces -->
+                        <img class="benefit img-fluid" alt="Map of Work-Friendly Locations" src="https://images.pexels.com/photos/3183187/pexels-photo-3183187.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260">
+                    </a>
+                    <h3 class="subheading py-2">Discover Nearby Workspaces</h3>
+                    <p class="body-text">Looking for peace, air-conditioning, or good lighting? Find a space that’s perfect for your needs!</p>
+                </div>
+                <div class="col-sm-6 padding-top-40">
+                    <a href="/users/register">
+                        <!-- New image source for Community -->
+                        <img class="benefit img-fluid" alt="Exoplore Cafe Community" src="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260">
+                    </a>
+                    <h3 class="subheading py-2">Connect with Professionals</h3>
+                    <p class="body-text">Network with skilled freelancers, digital nomads, and remote workers in a shared environment.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+
+  
+
+{%  endblock %}
