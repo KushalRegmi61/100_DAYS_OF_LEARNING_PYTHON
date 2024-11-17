@@ -24,6 +24,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    
+
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
@@ -38,12 +43,13 @@
     {% endblock %}
   </head>
   <body>
+
 <!-- Navigation-->
-<nav class="navbar navbar-expand-lg navbar-dark py-1" id="mainNavs" style="background-color:  #6f42c1;">
-  <div class="container px-4 px-lg-5">
+<nav class="navbar navbar-expand-lg navbar-dark py-2" id="mainNavs" style="background-color: #6f42c1;">
+  <div class="container-fluid px-4">
     
     <!-- Logo for the website -->
-    <a class="navbar-brand" href="/" style="font-weight: bold; font-size: 1.5rem; color: #ffffff;">
+    <a class="navbar-brand fw-bold fs-3" href="/" style="color: #fff;">
       .KR
     </a>
 
@@ -57,47 +63,63 @@
       aria-expanded="false"
       aria-label="Toggle navigation"
     >
-      <span>Menu</span>
-      <i class="fas fa-bars"></i>
+      <i class="fas fa-bars" style="color: #fff;"></i>
     </button>
 
     <!-- Navbar items -->
     <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ms-auto align-items-center">
+      <ul class="navbar-nav w-100 d-flex justify-content-between align-items-center">
         
-        <!-- Suggest Places item -->
-        <li class="nav-item mx-lg-2 px-lg-3">
-          <a class="nav-link d-flex align-items-center px-lg-2" href="{{url_for('add_cafe')}}" style="color: #ffffff;">
-            <i class="fa fa-fw fa-plus-circle me-2"></i> Suggest Places
-          </a>
-        </li>
+        <!-- Left Section: All Cities and Suggest Places -->
+        <div class="d-flex align-items-center">
+          <!-- All Cities option -->
+            <li class="nav-item me-3">
+            <a class="nav-link px-3 text-light" href="{{ url_for('explore_cafe') }}" >
+              <i class="fas fa-globe-americas me-2" style="color: white;"></i>All Cities
+            </a>
+            </li>
+
+          <!-- Suggest Places item -->
+          <li class="nav-item">
+            <a class="nav-link px-3 text-light" href="{{ url_for('add_cafe') }}" >
+              <i class="fa fa-fw fa-plus-circle me-2"></i>Suggest Places
+            </a>
+          </li>
+        </div>
 
 
 
-        <!-- Search box for location search -->
-        <li class="nav-item pl ">
-          <form class="d-flex">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search location"
-              aria-label="Search"
-              style="max-width: 200px; border-radius: 20px; border: 1px solid #ddd; background-color: #fff; color: #333;" 
-            />
-          </form>
-        </li>
+        <!-- Right Section: Extra Navigation Links -->
+        <div class="d-flex align-items-center">
+          <!-- Search Cafe item -->
+            <li class="nav-item mx-auto">
+              <form class="d-flex" action="{{ url_for('search_cafe') }}" method="post">
+                <input
+                  class="form-control"
+                  type="search"
+                  name="city_name"
+                  placeholder="Search City"
+                  aria-label="Search"
+                  style="max-width: 350px; border-radius: 30px; border: 1px solid #fff; background-color: #fff; color: #333;"
+                />
+                <button type="submit" class="btn" style="background-color: transparent; border: none; margin-left: -40px;">
+                  <i class="fas fa-search" style="color: #6f42c1;"></i>
+                </button>
+              </form>
+            </li>
 
-        <!-- Search icon -->
-        <li class="nav-item ">
-          <a class="nav-link px-lg-2 py-lg-4" href="/" style="color: #ffffff;">
-            <i class="fas fa-search"></i>
-          </a>
-        </li>
+            <li class="nav-item">
+            <a class="nav-link px-3 text-light" href="#" >
+              <i class="fas fa-users me-2"></i>Join Community
+            </a>
+            </li>
+        </div>
         
       </ul>
     </div>
   </div>
 </nav>
+
 
     
     
@@ -106,44 +128,62 @@
 
     {% endblock %}
     
-    <!-- Footer-->
-    <footer class="border-top">
-      <div class="container px-4 px-lg-5 py-4">
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-          <div class="col-md-10 col-lg-8 col-xl-7">
-            <!-- Footer Content -->
-            <ul class="list-inline text-center">
-              <li class="list-inline-item">
-                <a href="https://x.com/home">
-                  <span class="fa-stack fa-lg">
-                    <i class="fas fa-circle fa-stack-2x" style="color: black;"></i>
-                    <i class="fab fa-twitter fa-stack-1x fa-inverse" style="color: white;"></i>
-                  </span>
-                </a>
-              </li>
-              <li class="list-inline-item">
-                <a href="https://www.facebook.com/profile.php?id=100075757368660">
-                  <span class="fa-stack fa-lg">
-                    <i class="fas fa-circle fa-stack-2x" style="color: black;"></i>
-                    <i class="fab fa-facebook-f fa-stack-1x fa-inverse" style="color: white;"></i>
-                  </span>
-                </a>
-              </li>
-              <li class="list-inline-item">
-                <a href="https://github.com/KushalRegmi61">
-                  <span class="fa-stack fa-lg">
-                    <i class="fas fa-circle fa-stack-2x" style="color: black;"></i>
-                    <i class="fab fa-github fa-stack-1x fa-inverse" style="color: white;"></i>
-                  </span>
-                </a>
-              </li>
-            </ul>
-            <div class="small text-center text-muted fst-italic">Copyright &copy; Your Website 2024</div>
-            <div class="small text-center text-muted fst-italic">An initiative by Kushal R</div>
+<!-- Footer -->
+<hr>
+<footer class="bg-dark text-white py-lg-7">
+  <div class="container px-4 px-lg-5 py-lg-5">
+      <div class="row justify-content-between align-items-center">
+          <!-- Logo and Tagline -->
+          <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+              <a href="#" class="text-decoration-none">
+                  <h5 class="fw-bold mb-1" style="font-family: 'Poppins', sans-serif; color: #fff;">Explore | Cafe</h5>
+              </a>
+              <p class="small text-muted mb-0" style="font-family: 'Poppins', sans-serif; color: #a0a0a0;">Helping you find your perfect workspace.</p>
           </div>
-        </div>
+          <!-- Social Media Links -->
+          <div class="col-md-4 text-center">
+              <ul class="list-inline mb-0">
+                  <li class="list-inline-item mx-2">
+                      <a href="https://x.com/home" target="_blank" rel="noopener noreferrer" class="text-white">
+                          <i class="fab fa-twitter fa-lg"></i>
+                      </a>
+                  </li>
+                  <li class="list-inline-item mx-2">
+                      <a href="https://www.facebook.com/profile.php?id=100075757368660" target="_blank" rel="noopener noreferrer" class="text-white">
+                          <i class="fab fa-facebook-f fa-lg"></i>
+                      </a>
+                  </li>
+                  <li class="list-inline-item mx-2">
+                      <a href="https://github.com/KushalRegmi61" target="_blank" rel="noopener noreferrer" class="text-white">
+                          <i class="fab fa-github fa-lg"></i>
+                      </a>
+                  </li>
+                  <li class="list-inline-item mx-2">
+                      <a href="https://www.linkedin.com/in/kushal-regmi/" target="_blank" rel="noopener noreferrer" class="text-white">
+                          <i class="fab fa-linkedin fa-lg"></i>
+                      </a>
+                  </li>
+              </ul>
+          </div>
+          <!-- Navigation Links -->
+          <div class="col-md-4 text-center text-md-end">
+              <ul class="list-inline mb-0">
+                  <li class="list-inline-item mx-2">
+                      <a href="{{url_for('send_feedback')}}" class="text-muted text-decoration-none small" style="font-family: 'Poppins', sans-serif; color: #fff;">Send Us Feedback</a>
+                  </li>
+                  <!-- <li class="list-inline-item mx-2">
+                      <a href="#" class="text-muted text-decoration-none small" style="color: #a0a0a0;">Privacy</a>
+                  </li>
+                  <li class="list-inline-item mx-2">
+                      <a href="#" class="text-muted text-decoration-none small" style="color: #a0a0a0;">Contact</a>
+                  </li> -->
+              </ul>
+          </div>
       </div>
-    </footer>
+  </div>
+</footer>
+
+
     
     <!-- Go to Top Button -->
     <a href="#" id="goToTop" class="btn btn-lg btn-success book-now mb-4">Go to Top</a>
