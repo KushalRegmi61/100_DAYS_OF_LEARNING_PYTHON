@@ -13,20 +13,17 @@
     {% if cafes %}
     {% for cafe in cafes %}
     
-    <div class="row py-lg-2">
+    <div class="row py-lg-2 bg-dark">
             <!-- Wrap the entire card inside an anchor tag with dynamic href -->
             <a href="{{ url_for('cafe_details', cafe_id=cafe.id) }}" class="text-decoration-none cafe-card">
                 <!-- Flex container to align image and content side by side -->
-                <div class="d-flex cafe-card-inner">
-                    <!-- Image on the left with fixed size -->
-                    <div class="cafe-image" style="flex: 0 0 250px; height: 250px; overflow: hidden;">
-                        <img alt="{{ cafe.name }}" 
-                             src="{{ cafe.img_url }}" 
-                             class="img-fluid w-100 h-100" 
-                             style="object-fit: cover;"
-                             onerror="this.onerror=null;this.src='/static/images/index_cafe.jpg';">
-                    </div>
-
+                <div class="d-flex cafe-card-inner" 
+                    style="height: 200px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)">
+                <!-- Image on the left as a background -->
+                <div class="cafe-image bg-black" 
+                        style="flex: 0 0 200px; background-image: url('{{ cafe.img_url }}'); background-size: cover; background-position: center; background-repeat: no-repeat; height: 100%;"
+                        onerror="this.style.backgroundImage='url(/static/images/index_cafe.jpg)';">
+                </div>
                     <!-- Content on the right (card-like) -->
                     <div class="cafe-content p-3 shadow-sm" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
                         <!-- Cafe name at the top -->
