@@ -35,6 +35,14 @@ html {
   color: var(--imp-text-color);
 }
 
+.nav-link {
+  transition: color 0.3s ease;
+}
+.nav-link:hover {
+  color: #ffd700 !important; /* Gold color for hover effect */
+}
+
+
 /* Headings */
 .heading {
   font-family: "Georgia", serif;
@@ -327,4 +335,37 @@ list-inline-item a {
 /* Optional: Add transition for a subtle glow effect on hover */
 .cafe-card:hover {
   outline: 3px solid rgba(199, 112, 240, 0.2); /* Glow effect */
+}
+
+
+footer a {
+  color: #a0a0a0;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: #1dbf73; /* A vibrant green for hover */
+  text-decoration: underline;
+}
+
+footer i {
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+footer i:hover {
+  color: #1dbf73;
+  transform: scale(1.2);
+}
+
+footer h5 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: #fff;
+}
+
+footer p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  color: #a0a0a0;
 }
