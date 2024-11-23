@@ -48,12 +48,12 @@
   <body>
 
 <!-- Navigation-->
-<nav class="navbar navbar-expand-lg navbar-dark py-2" id="mainNavs" style="background-color: #6f42c1;">
+<nav class="navbar navbar-expand-lg navbar-dark py-2" id="mainNavs" style="background-color: #1e1e2f">
   <div class="container-fluid px-4">
     
     <!-- Logo for the website -->
     <a class="navbar-brand fw-bold fs-3" href="/" style="color: #fff;">
-      .KR
+      Let's Begin
     </a>
 
     <!-- Toggle button for mobile view -->
@@ -80,7 +80,7 @@
             <!-- manage list  -->
             <li class="nav-item">
             <a class="nav-link px-3 text-light" href="{{url_for('todo_lists')}}" >
-              <i class="fas fa-list me-2"></i>Lists
+              <i class="fas fa-list me-2"></i>Manage Lists
             </a>
             </li>
 
@@ -90,7 +90,7 @@
         <div class="d-flex align-items-center">
 
             <li class="nav-item">
-            <a class="nav-link px-3 text-light" href="#" >
+            <a class="nav-link px-3 text-light" href="{{url_for('login')}}" >
               <i class="fas fa-sign-in-alt me-2"></i>Login
             </a>
             </li>
@@ -181,12 +181,15 @@
         <a href="/" class="btn btn-lg btn-success book-now mb-4">Go to Top</a>
       </div> -->
 
-
+{% block scripts %}
+{% endblock %}
+    <!-- Load Bootstrap-Flask JS here -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
     crossorigin="anonymous"></script>
     <!-- Scroll to top script -->
     <script>
+
       // Get the button
       var mybutton = document.getElementById("goToTop");
     
