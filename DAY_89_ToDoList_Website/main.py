@@ -4,6 +4,7 @@ from flask import Flask, abort, render_template, redirect, url_for, flash, reque
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
+from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, URL, ValidationError, Email, Length
 from flask_wtf import FlaskForm
@@ -31,11 +32,11 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "secret")
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
-#initializing the login manager
+# TODO: Configure Flask-Login
 login_manager = LoginManager()
-login_manager.init_app(app)
+login_manager.init_app(app)  # Properly initializing the login manager with the app
 
-#loading the user
+# Create a user_loader callback
 @login_manager.user_loader
 def load_user(user_id):
     return db.get_or_404(User, user_id)
@@ -50,44 +51,28 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 #create a user table in the database
+# User model
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
-    name = db.Column(db.String(1000))
-    #creating a relationship between the user and the todo_list
-    todo_list = db.relationship('ToDoList', back_populates='user')
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)  # Primary key
+    email = db.Column(db.String(100), unique=True, nullable=False)  # Email should not be null
+    password = db.Column(db.String(100), nullable=False)  # Password should not be null
+    name = db.Column(db.String(1000), nullable=False)  # Name should not be null
+    # Relationship with ToDoList
+    todo_list = db.relationship('ToDoList', back_populates='user', cascade='all, delete-orphan')
 
-
-# Create a task table in the database
+# ToDoList model
 class ToDoList(db.Model):
     __tablename__ = 'todo_list'
-    id = db.Column(db.Integer, primary_key=True)#primary key
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))#foreign key
-    name = db.Column(db.String(250), nullable=False)
-    #creating a relationship between the tasks and the task_list
-    todo_task = db.relationship('TasksList', back_populates='todo_list')
-    #creating a relationship between the user and the todo_list
+    id = db.Column(db.Integer, primary_key=True)  # Primary key
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Foreign key
+    name = db.Column(db.String(250), nullable=False)  # Name of the to-do list
+    # Relationship with TasksList
+    todo_task = db.relationship('TasksList', back_populates='todo_list', cascade='all, delete-orphan')
+    # Relationship with User
     user = db.relationship('User', back_populates='todo_list')
 
-
-# Create a new table TaskList in the database
-class TasksList(db.Model):
-    __tablename__ = 'tasks_list'
-    id = db.Column(db.Integer, primary_key=True)#primary key
-    todo_id = db.Column(db.Integer, db.ForeignKey('todo_list.id'))#foreign key
-    #creating a relationship between the tasks and the task_list
-    todo_list = db.relationship('ToDoList', back_populates='todo_task')
-    title = db.Column(db.String(250), nullable=False)#title of the task
-    date = db.Column(db.String(250), nullable=False) #due date of the task
-    is_completed = db.Column(db.Boolean, nullable=False) #status of the task
-
-#initialize the database
-with app.app_context():
-    db.create_all()
-
-
-# #login manager
+# TasksList model# #login manager
 # login_manager = LoginManager()
 # login_manager.init_app(app)
 
@@ -96,6 +81,23 @@ with app.app_context():
 # def load_user(user_id):
 #     return db.get_or_404(User, user_id)
 
+class TasksList(db.Model):
+    __tablename__ = 'tasks_list'
+    id = db.Column(db.Integer, primary_key=True)  # Primary key
+    todo_id = db.Column(db.Integer, db.ForeignKey('todo_list.id'), nullable=False)  # Foreign key
+    title = db.Column(db.String(250), nullable=False)  # Task title
+    date = db.Column(db.String(250), nullable=False)  # Due date
+    is_completed = db.Column(db.Boolean, nullable=False, default=False)  # Task status
+    # Relationship with ToDoList
+    todo_list = db.relationship('ToDoList', back_populates='todo_task')
+
+# Initialize the database
+
+with app.app_context():
+    db.create_all()
+
+
+
 
 #login form 
 class LoginForm(FlaskForm):
@@ -103,9 +105,17 @@ class LoginForm(FlaskForm):
     password = PasswordField(label='Password')
     submit = SubmitField(label='Login')
 
+#creating a registration form
+class RegisterForm(FlaskForm):
+    email = StringField(label='Email', validators=[DataRequired(), Email()])
+    password = PasswordField(label='Password', validators=[DataRequired(), Length(min=6)])
+    name = StringField(label='Name', validators=[DataRequired()])
+    submit = SubmitField(label='Register')
+
 #creating a ToDoList form for the task table
 class CreateToDoList(FlaskForm):
     name = StringField(label='To-Do List Name', validators=[DataRequired()], render_kw={"placeholder": "To-Do List Name"})
+
     submit = SubmitField(label='Add ToDoList')
 
 # Update ToDoList form
@@ -127,63 +137,129 @@ class UpdateTaskListForm(CreateTaskListForm):
 # url for the home page
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    form = LoginForm()
+
+    return render_template('index.html',is_logged_in=current_user.is_authenticated)
+
+#methods for register user page
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
     if form.validate_on_submit():
         email = form.email.data
-        password = form.password.data
-        if email == os.getenv('EMAIL') and password == os.getenv('PASSWORD'):
-            return redirect(url_for('index'))
-        else:
-            flash('Invalid credentials')
+        name = form.name.data
+        new_user = User(
+            email=email,
+            password=generate_password_hash(form.password.data, method='pbkdf2:sha256', salt_length=8),
+            name=name
+        )
+        #check if the user already exists
+        user = db.session.query(User).filter_by(email=email).first()
+        if user:
+            flash("User already exists! Try login", "danger")
+            return redirect(url_for('login'))
+        
+        #add the user to the database
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            flash(f"{new_user.name} registered successfully!", "success")
+            return redirect(url_for('login'))
+        except Exception as e:
+            flash("An error occurred while registering the user.", "danger")
+            db.session.rollback()
+            return redirect(url_for('register'))
 
-    return render_template('index.html', form=form)
+    return render_template('register.html', form=form)
 
-# methods for login page
+
+#method for login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        email = form.email.data
+        email = form.email.data.strip()  # Strip extra spaces for better user input handling
         password = form.password.data
-        if email == os.getenv('EMAIL') and password == os.getenv('PASSWORD'):
-            return redirect(url_for('index'))
-        else:
-            flash('Invalid credentials')
+
+        # Query the database for the user
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            flash("User does not exist! Please register first.", "danger")
+            return redirect(url_for('register'))
+
+        # Verify password
+        if not check_password_hash(user.password, password):
+            flash("Incorrect password! Please try again.", "danger")
+            return redirect(url_for('login'))
+
+        # Log the user in
+        login_user(user)
+     
+        flash(f"Welcome back, {user.name}!", "success")
+        next_page = request.args.get('next')  # Handle redirection to the originally requested page
+        return redirect(next_page or url_for('todo_lists', user_id=user.id))
 
     return render_template('login.html', form=form)
 
 
+# method for logout
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
 # method for manage_list in nav bar
 @app.route('/todo_lists', methods=['GET', 'POST'])
 def todo_lists():
-    todo_lists = db.session.query(ToDoList).all()
+    print(current_user.is_authenticated)
+    # Ensure the user is authenticated
+    if not current_user.is_authenticated:
+        flash("You need to login first!", "danger")
+        return redirect(url_for('login'))
+
+    # Querying the to-do lists for the current user
+    todo_lists = db.session.query(ToDoList).filter_by(user_id=current_user.id).all()
+
+    # Initialize the form
     form = CreateToDoList()
+
+    # Handling form submission
     if form.validate_on_submit():
         new_todo_list = ToDoList(
-            name=form.name.data
+            name=form.name.data,
+            user_id=current_user.id  # Associate the list with the current user
         )
         try:
             db.session.add(new_todo_list)
             db.session.commit()
             flash(f"{new_todo_list.name} To-Do List added successfully!", "success")
-            #redirect to the new_task page
-            return redirect(url_for('new_task', todo_id=new_todo_list.id))#redirect to the new_task page
-        
-        except Exception:
-            flash("An error occurred while adding the To-Do List.", "danger")
+            # Redirect to the new_task page with the newly created list's ID
+            return redirect(url_for('new_task', todo_id=new_todo_list.id))
+        except Exception as e:
+            # Log the exception for debugging (optional)
+            print(f"Error occurred: {e}")
             db.session.rollback()
-            return redirect(url_for('index'))
-        
+            flash("An error occurred while adding the To-Do List.", "danger")
+            return redirect(url_for('todo_lists'))
+
+    # Render the template with the retrieved to-do lists and the form
     return render_template('todo_lists.html', todo_lists=todo_lists, form=form)
+
 
 
 # method to add_new todo list
 @app.route('/add_new_todo_list', methods=['GET', 'POST'])
 def add_new_todo_list():
+    #checking if the user is logged in
+    if not current_user.is_authenticated:
+        flash("You need to login first!", "danger")
+        return redirect(url_for('login'))
+    
     form = CreateToDoList()
     if form.validate_on_submit():
         new_todo_list = ToDoList(
-            name=form.name.data
+            name=form.name.data,
+            user_id=current_user.id
         )
         try:
             db.session.add(new_todo_list)
@@ -347,8 +423,6 @@ def delete_task(task_id):
         return redirect(url_for('new_task', todo_id=task.todo_id))
 
     
-
-
 
 # url for complete task
 @app.route('/complete/<int:task_id>')
