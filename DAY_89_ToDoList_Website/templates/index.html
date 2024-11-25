@@ -2,13 +2,53 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Page Content-->
+<div class="container mt-3">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8 col-md-10">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                <strong>{{ message }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
 
+    <!-- Page Header -->
+    <div class="text-center my-3">
+        <h1 class="subheading" style="color: #6f42c1; font-size: 3rem;">Task Manager</h1>
+        <p class="text-muted lead" style="font-size: large;">
+            Organize your tasks and boost productivity with ease.
+        </p>
+    </div>
 
-<!-- Page Header -->
-<H1>Hello There</H1>
+    <!-- Add New Task Button -->
+    <div class="text-center mb-4">
+        <a class="btn btn-primary btn-lg shadow-sm" style="padding: 12px 30px; font-size: 1.2rem;" href="{{url_for('todo_lists')}}">
+            <i class="bi bi-plus-circle-fill me-2" style="color: #ffffff; "></i>Manage To-Do List
+        </a>
+    </div>
 
-
-
-
+    <!-- Additional Section: Empty State or Dynamic Content -->
+    <div class="row justify-content-center pt-5">
+        <div class="col-lg-10 col-md-12 ">
+            <div class="card shadow-sm border-0 py-3">
+                <div class="card-body text-center">
+                    <h5 class="card-title subheading" style="color: #6f42c1; font-size: 1.2rem;">No TODO Lists Yet?</h5>
+                    <p class="card-text text-muted" style="font-size: large;">
+                        Start by creating your first ToDo List to keep track of your tasks.
+                    </p>
+                    <a href="{{url_for('add_new_todo_list')}}" class="btn btn-outline-primary">
+                        Get Started Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
