@@ -46,136 +46,135 @@
     {% endblock %}
   </head>
   <body>
+    <div class="wrapper">
+      <!-- Navigation-->
+      <nav class="navbar navbar-expand-lg navbar-dark py-2" id="mainNavs" style="background-color: #6f42c1;">
+        <div class="container-fluid px-4">
+          
+          <!-- Logo for the website -->
+          <a class="navbar-brand fw-bold fs-3" href="/" style="color: #fff;">
+            Let's Begin
+          </a>
 
-<!-- Navigation-->
-<nav class="navbar navbar-expand-lg navbar-dark py-2" id="mainNavs" style="background-color: #6f42c1;">
-  <div class="container-fluid px-4">
-    
-    <!-- Logo for the website -->
-    <a class="navbar-brand fw-bold fs-3" href="/" style="color: #fff;">
-      Let's Begin
-    </a>
+          <!-- Toggle button for mobile view -->
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarResponsive"
+            aria-controls="navbarResponsive"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <i class="fas fa-bars" style="color: #fff;"></i>
+          </button>
 
-    <!-- Toggle button for mobile view -->
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarResponsive"
-      aria-controls="navbarResponsive"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <i class="fas fa-bars" style="color: #fff;"></i>
-    </button>
+          <!-- Navbar items -->
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav w-100 d-flex justify-content-between align-items-center">
+              
+              <!-- Left Section: Main Navigation Links -->
+                
+              <div class="d-flex align-items-center">
 
-    <!-- Navbar items -->
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav w-100 d-flex justify-content-between align-items-center">
-        
-        <!-- Left Section: Main Navigation Links -->
-           
-        <div class="d-flex align-items-center">
+                  <!-- manage list  -->
+                  <li class="nav-item">
+                  <a class="nav-link px-3 text-light" href="{{url_for('todo_lists')}}" >
+                    <i class="fas fa-list me-2"></i>Manage Lists
+                  </a>
+                  </li>
 
-            <!-- manage list  -->
-            <li class="nav-item">
-            <a class="nav-link px-3 text-light" href="{{url_for('todo_lists')}}" >
-              <i class="fas fa-list me-2"></i>Manage Lists
-            </a>
-            </li>
+              </div>
 
+              <!-- Right Section: Extra Navigation Links -->
+              <div class="d-flex align-items-center">
+
+                  <li class="nav-item">
+                    {% if not current_user.is_authenticated %}
+                    <a class="nav-link px-3 text-light" href="{{url_for('login')}}" >
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                    {% else %}
+                    <a class="nav-link px-3 text-light" href="{{url_for('logout')}}" >
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                    {% endif %}
+                  </li>
+
+                  <!-- Suggest Places item -->
+                  <li class="nav-item">
+                      <a class="nav-link px-3 text-light" href="{{url_for('add_new_todo_list')}}" >
+                      <i class="fa fa-fw fa-plus-circle me-2"></i>New List
+                      </a>
+                  </li>
+              </div>
+              
+            </ul>
+          </div>
         </div>
+      </nav>
 
-        <!-- Right Section: Extra Navigation Links -->
-        <div class="d-flex align-items-center">
-
-            <li class="nav-item">
-              {% if not current_user.is_authenticated %}
-              <a class="nav-link px-3 text-light" href="{{url_for('login')}}" >
-              <i class="fas fa-sign-in-alt me-2"></i>Login
-              </a>
-              {% else %}
-              <a class="nav-link px-3 text-light" href="{{url_for('logout')}}" >
-              <i class="fas fa-sign-out-alt me-2"></i>Logout
-              </a>
-              {% endif %}
-            </li>
-
-            <!-- Suggest Places item -->
-            <li class="nav-item">
-                <a class="nav-link px-3 text-light" href="{{url_for('add_new_todo_list')}}" >
-                <i class="fa fa-fw fa-plus-circle me-2"></i>New List
-                </a>
-            </li>
-        </div>
-        
-      </ul>
+      <!-- Page Content -->
+      <div class="container my-5">
+        {% block content %}
+        {% endblock %}
+      </div>
     </div>
-  </div>
-</nav>
-
-
-    
-    
-    <!-- Page Content-->
-    {% block content %}
-
-    {% endblock %}
-    
+          
 <!-- Footer -->
 
-<footer class=" text-white py-lg-7" style="background-color: #6f42c1;">
-  <div class="container px-4 px-lg-5 py-lg-5">
-      <div class="row justify-content-between align-items-center">
-          <!-- Logo and Tagline -->
-          <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
-              <a href="#" class="text-decoration-none">
-                  <h5 class="fw-bold mb-1" style="font-family: 'Poppins', sans-serif; color: #fff;">To Do List</h5>
-              </a>
-              <p class="small text-muted mb-0" style="font-family: 'Poppins', sans-serif; color: #a0a0a0;">Improve productivity and efficiency</p>
-          </div>
-          <!-- Social Media Links -->
-          <div class="col-md-4 text-center">
-              <ul class="list-inline mb-0">
-                  <li class="list-inline-item mx-2">
-                      <a href="https://x.com/home" target="_blank" rel="noopener noreferrer" class="text-white">
-                          <i class="fab fa-twitter fa-lg"></i>
-                      </a>
-                  </li>
-                  <li class="list-inline-item mx-2">
-                      <a href="https://www.facebook.com/profile.php?id=100075757368660" target="_blank" rel="noopener noreferrer" class="text-white">
-                          <i class="fab fa-facebook-f fa-lg"></i>
-                      </a>
-                  </li>
-                  <li class="list-inline-item mx-2">
-                      <a href="https://github.com/KushalRegmi61" target="_blank" rel="noopener noreferrer" class="text-white">
-                          <i class="fab fa-github fa-lg"></i>
-                      </a>
-                  </li>
-                  <li class="list-inline-item mx-2">
-                      <a href="https://www.linkedin.com/in/kushal-regmi/" target="_blank" rel="noopener noreferrer" class="text-white">
-                          <i class="fab fa-linkedin fa-lg"></i>
-                      </a>
-                  </li>
-              </ul>
-          </div>
-          <!-- Navigation Links -->
-          <div class="col-md-4 text-center text-md-end">
-              <ul class="list-inline mb-0">
-                  <li class="list-inline-item mx-2">
-                      <a href="/" class="text-muted text-decoration-none small" style="font-family: 'Poppins', sans-serif; color: #fff;">Send Us Feedback</a>
-                  </li>
-                  <!-- <li class="list-inline-item mx-2">
-                      <a href="#" class="text-muted text-decoration-none small" style="color: #a0a0a0;">Privacy</a>
-                  </li>
-                  <li class="list-inline-item mx-2">
-                      <a href="#" class="text-muted text-decoration-none small" style="color: #a0a0a0;">Contact</a>
-                  </li> -->
-              </ul>
+    <footer class=" text-white py-10" style="background-color: #6f42c1;">
+      <div class="container px-4 px-lg-5 py-lg-5">
+          <div class="row justify-content-between align-items-center">
+              <!-- Logo and Tagline -->
+              <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                  <a href="#" class="text-decoration-none">
+                      <h5 class="fw-bold mb-1" style="font-family: 'Poppins', sans-serif; color: #fff;">To Do List</h5>
+                  </a>
+                  <p class="small text-muted mb-0" style="font-family: 'Poppins', sans-serif; color: #a0a0a0;">Improve productivity and efficiency</p>
+              </div>
+              <!-- Social Media Links -->
+              <div class="col-md-4 text-center">
+                  <ul class="list-inline mb-0">
+                      <li class="list-inline-item mx-2">
+                          <a href="https://x.com/home" target="_blank" rel="noopener noreferrer" class="text-white">
+                              <i class="fab fa-twitter fa-lg"></i>
+                          </a>
+                      </li>
+                      <li class="list-inline-item mx-2">
+                          <a href="https://www.facebook.com/profile.php?id=100075757368660" target="_blank" rel="noopener noreferrer" class="text-white">
+                              <i class="fab fa-facebook-f fa-lg"></i>
+                          </a>
+                      </li>
+                      <li class="list-inline-item mx-2">
+                          <a href="https://github.com/KushalRegmi61" target="_blank" rel="noopener noreferrer" class="text-white">
+                              <i class="fab fa-github fa-lg"></i>
+                          </a>
+                      </li>
+                      <li class="list-inline-item mx-2">
+                          <a href="https://www.linkedin.com/in/kushal-regmi/" target="_blank" rel="noopener noreferrer" class="text-white">
+                              <i class="fab fa-linkedin fa-lg"></i>
+                          </a>
+                      </li>
+                  </ul>
+              </div>
+              <!-- Navigation Links -->
+              <div class="col-md-4 text-center text-md-end">
+                  <ul class="list-inline mb-0">
+                      <li class="list-inline-item mx-2">
+                          <a href="/" class="text-muted text-decoration-none small" style="font-family: 'Poppins', sans-serif; color: #fff;">Send Us Feedback</a>
+                      </li>
+                      <!-- <li class="list-inline-item mx-2">
+                          <a href="#" class="text-muted text-decoration-none small" style="color: #a0a0a0;">Privacy</a>
+                      </li>
+                      <li class="list-inline-item mx-2">
+                          <a href="#" class="text-muted text-decoration-none small" style="color: #a0a0a0;">Contact</a>
+                      </li> -->
+                  </ul>
+              </div>
           </div>
       </div>
-  </div>
-</footer>
+    </footer>
 
 
     
