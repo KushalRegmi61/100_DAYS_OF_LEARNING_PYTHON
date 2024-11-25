@@ -124,18 +124,17 @@ class CreateTaskListForm(FlaskForm):
     title = StringField(label='Title', validators=[DataRequired()], render_kw={"placeholder": "ToDoList Title"})
     due_date = StringField(label='Due Date', validators=[DataRequired()], render_kw={"placeholder": "YYYY-MM-DD"})
     due_time = StringField(label='Due Time', validators=[DataRequired()], render_kw={"placeholder": "Eg: 12:00 PM"})
-    submit = SubmitField(label='Add ToDoList')
+    submit = SubmitField(label='Add Task')
 
 # update ToDoList form
 class UpdateTaskListForm(CreateTaskListForm):
-    submit = SubmitField(label='Update ToDoList')
+    submit = SubmitField(label='Update Task')
 
 
 
 # url for the home page
 @app.route('/', methods=['GET', 'POST'])
-def home():
-
+def home(): 
     return render_template('index.html',is_logged_in=current_user.is_authenticated)
 
 #methods for register user page
@@ -195,7 +194,7 @@ def login():
      
         flash(f"Welcome back, {user.name}!", "success")
         next_page = request.args.get('next')  # Handle redirection to the originally requested page
-        return redirect(next_page or url_for('todo_lists', user_id=user.id))
+        return redirect(next_page) if next_page else redirect(url_for('home'))
 
     return render_template('login.html', form=form)
 
