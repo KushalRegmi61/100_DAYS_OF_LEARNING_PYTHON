@@ -1,38 +1,38 @@
 {% from "bootstrap5/form.html" import render_form %}
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-1">
-
-    <!-- Flash Messages -->
-    <div class="container py-3">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="row justify-content-center mb-3">
-            <div class="col-lg-8 col-md-10">
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-        {% endwith %}
-    </div>
+<div class="container mt-3">
 
     <!-- Page Header -->
-    <div class="text-center mb-4">
-        <h1 class="display-2 subheading">{{ todo_list.name }}</h1>
-        <p class="lead body-text">{{ todo_list.due_date }} {{ todo_list.due_time }}</p>
+    <div class="text-center mb-4 py-5 rounded shadow-lg" style="background: linear-gradient(135deg, #6f42c1, #8e44ad); color: white;">
+        <h1 class="display-4 mb-3 subheading pt-2" style="font-size: 2.5rem;">
+            <i class="fas fa-tasks me-2"></i>{{ todo_list.name }} 
+        </h1>
+        <div class="d-flex justify-content-center align-items-center flex-wrap gap-4">
+            <p class="lead body-text mb-0 d-flex align-items-center">
+                <i class="fas fa-calendar-alt me-2 text-warning"></i>
+                <span class="fw-bold">Due Date:</span>{{ todo_list.due_date or "Not Set" }}
+            </p>
+            <p class="lead body-text mb-0 d-flex align-items-center">
+                <i class="fas fa-clock me-2 text-warning"></i>
+                <span class="fw-bold">Due Time:</span> {{ todo_list.due_time or "Not Set" }}
+            </p>
+        </div>
     </div>
 
-    <!-- Add New Task Button -->
-    <div class="text-center mb-4">
-        <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#newTaskModal">
-            + New Task
+<!-- Add New Task Button -->
+<div class="d-flex justify-content-center align-items-center flex-column gap-4 pt-4">
+    <p class="lead text-muted mb-1 d-flex align-items-center" style="font-size: 1.2rem; text-align: center;">
+        <span class="fw-bold">Add a Task, Because Your Brain’s Too Full of Useless Trivia!</span>
+    </p>
+
+    <div class="text-center">
+        <button class="btn btn-primary btn-lg px-5 py-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#newTaskModal">
+            <i class="fas fa-plus me-2"></i> New Task
         </button>
     </div>
+</div>
+
 
     <!-- Modal for New Task Form -->
     <div class="modal fade" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
@@ -51,17 +51,35 @@
         </div>
     </div>
 
+    <!-- Flash Messages -->
+    <div class="container py-2">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="row justify-content-center mb-3">
+            <div class="col-lg-8 col-md-10">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+
     <!-- Pending Tasks Section -->
     <div class="container my-5">
-        <h3 class="subheading py-2">Pending Tasks for {{ todo_list.name }}</h3>
+        <h3 class="subheading py-2">Pending Tasks</h3>
         <hr>
-        <div class="card-body py-2">
+        <div class="card-body py-3">
             {% if tasks|length == 0 %}
             <p class="text-muted" style="font-size: large;">No pending tasks. Add one above!</p>
             {% else %}
             <div class="row">
                 {% for task in tasks %}
-                <div class="col-12 d-flex align-items-center mb-3">
+                <div class="col-12 d-flex align-items-center mb-4">
                     <div class="me-3">
                         <a href="{{ url_for('complete_task', task_id=task.id) }}" class="btn btn-success btn-sm">
                             <i class="fas fa-check"></i>
@@ -76,15 +94,38 @@
                                     </h4>
                                 </div>
                                 <div class="d-flex flex-column align-items-end" style="flex-grow: 1;">
-                                    <p class="text-muted mb-2"><strong>Due:</strong> {{ task.due_date }}, {{ task.due_time }}</p>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-clock me-1 " style="font-size: 15px;"></i>
+                                        <strong>Due:</strong> {{ task.due_date }}, {{ task.due_time }}
+                                    </p>
                                     <div class="d-flex">
                                         <a href="{{ url_for('edit_task', task_id=task.id) }}" class="btn btn-warning btn-sm me-2">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="{{ url_for('delete_task', task_id=task.id) }}" class="btn btn-danger btn-sm">
+                                        <!-- Trigger for Delete Confirmation Modal -->
+                                        <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTaskModal{{ task.id }}">
                                             <i class="fas fa-trash"></i>
                                         </a>
+
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal for Delete Confirmation -->
+                    <div class="modal fade" id="deleteTaskModal{{ task.id }}" tabindex="-1" aria-labelledby="deleteTaskModalLabel{{ task.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteTaskModalLabel{{ task.id }}">Confirm Delete</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete the task "{{ task.title }}"?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <a href="{{ url_for('delete_task', task_id=task.id) }}" class="btn btn-danger">Yes, Delete</a>
                                 </div>
                             </div>
                         </div>
@@ -98,14 +139,14 @@
 
     <!-- Completed Tasks Section -->
     {% if completed_tasks|length != 0 %}
-    <div class="container mt-5 mb-2">
+    <div class="container mt-5 mb-4">
         <h3 class="subheading py-2">Completed Tasks</h3>
         <hr class="my-4">
         <div class="card shadow-sm border-0">
             <div class="card-body">
                 <ul class="list-group body-text">
                     {% for task in completed_tasks %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center bg-dark text-light border-0 rounded-3 mb-2">
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-dark text-light border-0 rounded-3 mb-3">
                         <del class="text-muted" style="font-size: large;">{{ task.title }}</del>
                     </li>
                     {% endfor %}
