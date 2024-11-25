@@ -2,7 +2,7 @@ from datetime import date
 from hashlib import md5
 from flask import Flask, abort, render_template, redirect, url_for, flash, request,current_app, session
 from flask_bootstrap import Bootstrap5
-from flask_ckeditor import CKEditor
+from flask_ckeditor import CKEditor, CKEditorField
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import StringField, SubmitField, PasswordField
@@ -17,10 +17,13 @@ import hashlib
 import smtplib
 import os
 from dotenv import load_dotenv
+from smtplib import SMTP
 
 
 # Load environment variables
 load_dotenv()
+EMAIL = os.getenv("EMAIL")
+PASSWORD= os.getenv("EMAIL_PASSWORD")
 
 #global variables 
 completed_tasks=[]
@@ -130,7 +133,31 @@ class CreateTaskListForm(FlaskForm):
 class UpdateTaskListForm(CreateTaskListForm):
     submit = SubmitField(label='Update Task')
 
-
+class FeedbackForm(FlaskForm):
+    name = StringField(
+        "Name",
+        validators=[DataRequired()],
+        render_kw={"class": "form-control", "placeholder": "Enter your name"}
+    )
+    email = StringField(
+        "Email",
+        validators=[DataRequired(), Email()],
+        render_kw={"class": "form-control", "placeholder": "Enter your email address"}
+    )
+    phone = StringField(
+        "Phone",
+        validators=[DataRequired()],
+        render_kw={"class": "form-control", "placeholder": "Enter your phone number"}
+    )
+    message = CKEditorField(
+        "Message",
+        validators=[DataRequired()],
+        render_kw={"class": "form-control", "placeholder": "Enter your message"}
+    )
+    submit = SubmitField(
+        "Send Feedback",
+        render_kw={"class": "btn btn-primary"}
+    )
 
 # url for the home page
 @app.route('/', methods=['GET', 'POST'])
@@ -204,6 +231,16 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+
+#method to display the user profile
+@app.route('/profile')
+def profile():
+    if not current_user.is_authenticated:
+        flash("You need to login first!", "danger")
+        return redirect(url_for('login'))
+
+    return render_template('profile.html', user=current_user)
 
 # method for manage_list in nav bar
 @app.route('/todo_lists', methods=['GET', 'POST'])
@@ -462,6 +499,40 @@ def clear_completed_tasks(todo_id):
         
     return redirect(url_for('new_task', todo_id=todo_id))  # Redirect after clearing
 
+
+# Feedback route
+@app.route('/send_feedback', methods=['GET', 'POST'])
+def send_feedback():
+    form = FeedbackForm()
+    if form.validate_on_submit():
+        # Get form data
+        name = form.name.data
+        email = form.email.data
+        phone = form.phone.data
+        message = form.message.data
+
+
+        # Send feedback to the admin
+        try:
+            with SMTP("smtp.gmail.com") as connection:
+                connection.starttls()
+                connection.login(user=EMAIL, password=PASSWORD)
+                connection.sendmail(
+                    from_addr=EMAIL,
+                    to_addrs=email,
+                    msg=f"Subject:New Feedback\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage: {message}"
+                )
+        except Exception as e:
+            print(e)
+            flash("An error occurred while sending feedback. Please try again.", "error")
+            return redirect(url_for('send_feedback'))
+
+        # Set success message
+        flash("Feedback sent successfully!", "success")
+
+        return redirect(url_for('home'))
+
+    return render_template('feedback.html', form=form)
 
 # initializing the app
 if __name__ == "__main__":
