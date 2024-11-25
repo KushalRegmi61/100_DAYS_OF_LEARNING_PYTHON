@@ -58,7 +58,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(100), unique=True, nullable=False)  # Email should not be null
     password = db.Column(db.String(100), nullable=False)  # Password should not be null
     name = db.Column(db.String(1000), nullable=False)  # Name should not be null
-    # Relationship with ToDoList
+    # Relationship with ToDoList not required in this case as i am not going to access todo list
     todo_list = db.relationship('ToDoList', back_populates='user', cascade='all, delete-orphan')
 
 # ToDoList model
@@ -67,28 +67,24 @@ class ToDoList(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Primary key
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Foreign key
     name = db.Column(db.String(250), nullable=False)  # Name of the to-do list
+    due_date = db.Column(db.String(250), nullable=False)  # Due date of the to-do list  
+    due_time = db.Column(db.String(250), nullable=False)  # Due time of the to-do list
     # Relationship with TasksList
     todo_task = db.relationship('TasksList', back_populates='todo_list', cascade='all, delete-orphan')
-    # Relationship with User
-    user = db.relationship('User', back_populates='todo_list')
+    # Relationship with User not required in this case as i am not going to access user 
+    user = db.relationship('User', back_populates='todo_list') 
 
-# TasksList model# #login manager
-# login_manager = LoginManager()
-# login_manager.init_app(app)
 
-# #loading the user
-# @login_manager.user_loader
-# def load_user(user_id):
-#     return db.get_or_404(User, user_id)
-
+# Task model
 class TasksList(db.Model):
     __tablename__ = 'tasks_list'
     id = db.Column(db.Integer, primary_key=True)  # Primary key
     todo_id = db.Column(db.Integer, db.ForeignKey('todo_list.id'), nullable=False)  # Foreign key
     title = db.Column(db.String(250), nullable=False)  # Task title
-    date = db.Column(db.String(250), nullable=False)  # Due date
+    due_date = db.Column(db.String(250), nullable=False)  # Due due_date
+    due_time = db.Column(db.String(250), nullable=False)  # Due due_time
     is_completed = db.Column(db.Boolean, nullable=False, default=False)  # Task status
-    # Relationship with ToDoList
+    # Relationship with ToDoList Not Required in this case as i am not going to access todo_list 
     todo_list = db.relationship('ToDoList', back_populates='todo_task')
 
 # Initialize the database
@@ -115,7 +111,8 @@ class RegisterForm(FlaskForm):
 #creating a ToDoList form for the task table
 class CreateToDoList(FlaskForm):
     name = StringField(label='To-Do List Name', validators=[DataRequired()], render_kw={"placeholder": "To-Do List Name"})
-
+    due_date = StringField(label='Due Date', validators=[DataRequired()], render_kw={"placeholder": "YYYY-MM-DD"})
+    due_time = StringField(label='Due Time', validators=[DataRequired()], render_kw={"placeholder": "Eg: 12:00 PM"})
     submit = SubmitField(label='Add ToDoList')
 
 # Update ToDoList form
@@ -125,7 +122,8 @@ class UpdateToDoListForm(CreateToDoList):
 #task_list form
 class CreateTaskListForm(FlaskForm):
     title = StringField(label='Title', validators=[DataRequired()], render_kw={"placeholder": "ToDoList Title"})
-    date = StringField(label='Date', validators=[DataRequired()], render_kw={"placeholder": "YYYY-MM-DD "})
+    due_date = StringField(label='Due Date', validators=[DataRequired()], render_kw={"placeholder": "YYYY-MM-DD"})
+    due_time = StringField(label='Due Time', validators=[DataRequired()], render_kw={"placeholder": "Eg: 12:00 PM"})
     submit = SubmitField(label='Add ToDoList')
 
 # update ToDoList form
@@ -227,6 +225,8 @@ def todo_lists():
     if form.validate_on_submit():
         new_todo_list = ToDoList(
             name=form.name.data,
+            due_date=form.due_date.data,
+            due_time=form.due_time.data,
             user_id=current_user.id  # Associate the list with the current user
         )
         try:
@@ -259,6 +259,8 @@ def add_new_todo_list():
     if form.validate_on_submit():
         new_todo_list = ToDoList(
             name=form.name.data,
+            due_date=form.due_date.data,
+            due_time=form.due_time.data,
             user_id=current_user.id
         )
         try:
@@ -271,6 +273,7 @@ def add_new_todo_list():
         
         except Exception as e:
             flash("An error occurred while adding the To-Do List.", "danger")
+            print(f"Error occurred: {e}")
             db.session.rollback()
             return redirect(url_for('index'))
 
@@ -284,6 +287,8 @@ def edit_todo_list(todo_id):
 
     if form.validate_on_submit():
         todo_list.name = form.name.data
+        todo_list.due_date = form.due_date.data
+        todo_list.due_time = form.due_time.data
         try:
             db.session.commit()
             flash(f"{todo_list.name} To-Do List updated successfully!", "success")
@@ -355,7 +360,8 @@ def new_task(todo_id):
         new_task = TasksList(
             todo_id=todo_id,
             title=form.title.data.strip(),
-            date=form.date.data,
+            due_date=form.due_date.data,
+            due_time=form.due_time.data,
             is_completed=False
         )
         try:
@@ -391,7 +397,9 @@ def edit_task(task_id):
     if form.validate_on_submit():
 
         task.title = form.title.data
-        task.date = form.date.data
+        task.due_date = form.due_date.data
+        task.due_time = form.due_time.data
+
 
         try:
             db.session.commit()
