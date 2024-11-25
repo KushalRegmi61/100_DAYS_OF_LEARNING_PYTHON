@@ -6,12 +6,26 @@
 {% block content %}
 
 <!-- Page Header -->
-<header class="text-center pt-5 mb-5">
-    <h1 class="display-3 subheading" style="font-family: 'Georgia', serif; color: #ffffff;">Add New To-Do List</h1>
-</header>
+<!-- <div class="text-center mb-4 py-5 rounded shadow-lg" style="background: linear-gradient(135deg, #6f42c1, #8e44ad); color: white; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);">
+    <h1 class="mb-3 subheading" style="font-size: 2.5rem;">
+        Let’s Get Stuff Done.. Maybe.
+    </h1>
+    <div class="d-flex justify-content-center align-items-center flex-wrap gap-4 pt-4">
+        <p class="lead body-text mb-0 d-flex align-items-center" >
+            <span class="fw-bold">Add a Task, Because Your Brain’s Too Full of Useless Trivia!.</span>
+        </p>
+    </div>
+</div> -->
+<!-- Page Header -->
+<div class="text-center my-3">
+    <h1 class="subheading" style="color: #6f42c1; font-size: 3rem;">Task Manager</h1>
+    <p class="text-muted lead py-2" style="font-size: large;">
+        Sort your tasks, skip the stress, and maybe even finish something today.
+    </p>
+</div>
 
 <!-- Add New Task Button -->
-<div class="text-center mb-2">
+<div class="text-center mb-4 pt-2">
     <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#newTaskModal" style="padding: 10px 20px; font-size: 1rem;">
         +  New To-Do List
     </button>
@@ -105,7 +119,8 @@
                             <a href="{{ url_for('edit_todo_list', todo_id=todo_list.id) }}" class="icon-link text-light me-3" title="Edit List">
                                 <i class="fas fa-edit" style="font-size: 15px;"></i>
                             </a>
-                            <a href="{{ url_for('delete_todo_list', todo_id=todo_list.id) }}" class="icon-link text-light" title="Delete List">
+                            <!-- Modal Trigger for Delete Confirmation -->
+                            <a href="#" class="icon-link text-light" data-bs-toggle="modal" data-bs-target="#deleteModal{{ todo_list.id }}" title="Delete List">
                                 <i class="fas fa-trash-alt" style="font-size: 15px;"></i>
                             </a>
                         </div>
@@ -114,8 +129,27 @@
                     
                 </div>
             </div>
+            <!-- Modal for Delete Confirmation -->
+            <div class="modal fade" id="deleteModal{{ todo_list.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ todo_list.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel{{ todo_list.id }}">Delete To-Do List</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete the list "{{ todo_list.name }}"?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <a href="{{ url_for('delete_todo_list', todo_id=todo_list.id) }}" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         {% endfor %}
+
     </div>
 </div>
 
