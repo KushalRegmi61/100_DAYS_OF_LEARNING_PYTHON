@@ -1,5 +1,22 @@
 @charset "utf-8";
 
+
+html, body {
+  height: 100%;          /* Ensure the body and html fill the full height */
+  margin: 0;             /* Remove any default margin */
+  display: flex;         /* Use Flexbox to manage layout */
+  flex-direction: column; /* Stack children vertically */
+}
+.wrapper {
+  flex: 1;               /* Pushes the footer to the bottom when content is insufficient */
+  display: flex;         /* Allows flexibility for additional layout within the wrapper */
+  flex-direction: column;
+}
+footer {
+  flex-shrink: 1;        /* Prevents footer from shrinking or overlapping */
+}
+
+
 /* Base Colors and Gradients */
 html {
   --section-background-color: linear-gradient(
@@ -16,6 +33,9 @@ html {
 
   --imp-text-color: #c770f0;
 }
+
+
+
 
 /* Navigation Links */
 .nav-link,
