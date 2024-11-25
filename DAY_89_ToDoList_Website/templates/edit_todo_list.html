@@ -7,21 +7,26 @@
 
 
 <!-- Secection to render new to-do list -->
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            <!-- Update Cafe Form -->
-            <div class="card shadow-sm border-0 rounded-lg">
-                <div class="card-body">
-                    <h2 class="subheading
-                    text-center py-2">Update To-Do List Below</h2>
-                    <!-- Render Form with Novalidate and Custom Submit Button -->
-                    {{ render_form(form, novalidate=True, button_map={"submit": "success"}) }}
+<main class="mb-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow" style="background-color: #1e1e2f; border: none; border-radius: 10px;">
+                    <div class="card-body p-5">
+                        <div class="page-heading py-5 text-center">
+                            <h1 class="heading">Edit ToDo List</h1>
+                            <span class="subheading" style="color: #d8b4fe;">Update your Todo List details</span>
+                            <hr style="border-top: 1px solid #d8b4fe; margin: 2rem 0;" />
+                        </div>
+                        <div class="form-container">
+                            {{ render_form(form, novalidate=True, button_map={"submit": "success"}) }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</main>
 
 
 
