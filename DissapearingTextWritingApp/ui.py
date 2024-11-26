@@ -48,7 +48,8 @@ class TextDisappearingApp:
         self.quit_button = Button(text="Quit", font=("Times New Roman", 20, "bold"), command=self.quit_game) # Quit button
         self.quit_button.grid(row=3, column=6, pady=50)
 
-
+        # binding the keys event to reset_time_label function
+        self.root.bind("<KeyPress>", self.reset_time_label)
 
 
         # run the app
@@ -116,7 +117,10 @@ class TextDisappearingApp:
             
 
 
-    # function to update the score_label
+
+
+
+    
             
 
 
