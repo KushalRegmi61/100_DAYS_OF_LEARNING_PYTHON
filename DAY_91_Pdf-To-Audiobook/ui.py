@@ -227,5 +227,4 @@ class PdfToAudiobook:
                 self.root.quit()
 
 
-# running the app
-PdfToAudiobook()
+
