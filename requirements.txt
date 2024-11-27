@@ -13,5 +13,7 @@ psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 email_validator
 pandas
-
+requests
+gtts 
+PyPDF2
 Pillow
