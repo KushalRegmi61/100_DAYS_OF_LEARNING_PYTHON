@@ -1,129 +1,87 @@
-{% extends 'base.html' %}
-
+{% from "bootstrap5/form.html" import render_form %}
+{% extends "base.html" %}
 {% block content %}
-<!-- Flash message section -->
-<div class="container py-2">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
+
+
+<!-- Card Section -->
+
+<div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="card shadow" style="background-color: #1e1e2f; border: none; border-radius: 10px;">
+                <div class="card-body p-5">
+                    <div class="page-heading pt-5 text-center" >
+                        <h1 class="subheading" >Image Color Extractor</h1>
+                        <span class="body-text
+                        " style="color: #d8b4fe;">Upload an image to extract its color palette</span>
+                        <!-- Flashed Message Section -->
+                        <div class="container pt-2">
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8 col-md-10">
+                                    {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                        </div>
+
+                        <hr style="border-top: 1px solid #d8b4fe; margin: 2rem 0;" />
+                    </div>
+                    <!-- Render the image if it exist  -->
+                    {% if uploaded_image %}
+                        <div class="text-center">
+                            <img src="{{ url_for('static', filename=uploaded_image) }}" class="img-fluid" style="border-radius: 10px;">
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Table to display Color, Color_Hex Code and Color Percentage -->
+                    {% if colors %}
+                    <div class="table-responsive pt-3">
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr class="text-center">
+                                    <th scope="col">Color</th>
+                                    <th scope="col">Hex Code</th>
+                                    <th scope="col">Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for color in colors %}
+                                <tr class="text-center">
+                                    <td style="background-color: {{ color.hex }};"></td>
+                                    <td>{{ color.hex }}</td>
+                                    <td>{{ color.percentage }}%</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Displaying the Form  -->
+                    <div class="form-container pt-3">
+                            {{ render_form(form, novalidate=True) }}
+                    </div>
+                    <!-- Rendering the anchor tag to extract color -->
+                    <div class="text-center mt-4">
+                        <form action="{{ url_for('extract') }}" method="POST">
+                            <button type="submit" class="btn btn-primary">Extract Color</button>
+                        </form>
+                    </div>
+                    
+                </div>
             </div>
-            {% endfor %}
         </div>
     </div>
-    {% endif %}
-    {% endwith %}
 </div>
 
 
-<main class="container my-4 flex-grow-1">
-    <div class="card shadow-lg p-5 border-0" style="background: linear-gradient(135deg, #6f42c1, #9b59b6); color: #fff; border-radius: 12px;">
-        <!-- Title -->
-        <h2 class="card-title text-center mb-4" style="font-size: 2rem; font-weight: bold; letter-spacing: 1px;">Upload an Image to Detect Colors</h2>
-        
-        <!-- Image Section -->
-        <div class="text-center mb-4">
-            <img src="../static/assets/img/demo.jpg" alt="Color Detection" class="img-fluid w-100 rounded shadow-sm" style="height: auto; object-fit: cover; filter: drop-shadow(0px 6px 8px rgba(0, 0, 0, 0.3));">
-        </div>
-        
-        <!-- Table for Color Details -->
-        <div class="table-responsive rounded shadow-lg bg-white p-3">
-            <table class="table table-striped table-bordered">
-                <thead class="bg-dark text-white">
-                    <tr class="text-center">
-                        <th scope="col" style="font-size: 1.1rem;">Color</th>
-                        <th scope="col" style="font-size: 1.1rem;">Color Code</th>
-                        <th scope="col" style="font-size: 1.1rem;">Percentage</th>
-                    </tr>
-                </thead>
-                <tbody id="colorDetails">
-                    <!-- Dynamic content will populate here -->
-                    {% if hex_color_dict %}
-                    <table class="table">
-                        <thead>
-                            <tr class="text-center">
-                                <th>Color</th>
-                                <th>Hex Code</th>
-                                <th>Percentage</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for code, percentage in hex_color_dict.items() %}
-                                <tr class="text-center">
-                                    <td>
-                                        <div style="width: 40px; height: 40px; background-color: {{ code }}; margin: auto; border-radius: 4px; border: 2px solid #fff;"></div>
-                                    </td>
-                                    <td>{{ code }}</td>
-                                    <td>{{ percentage }}%</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p class="text-center">No colors detected. Please upload an image.</p>
-                {% endif %}
-                
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Form Section -->
-        <form id="colorForm" enctype="multipart/form-data" class="text-center mt-4" method="post">
-            <!-- File Upload -->
-            <div class="mb-3">
-            <label for="imageInput" class="form-label" style="font-size: 1.2rem; font-weight: 500;">Choose an Image</label>
-            <input type="file" name="image" id="imageInput" class="form-control form-control-lg" accept="image/*" style="border-radius: 8px;" required>
-            </div>
-        </form>
-        <!-- Submit Button -->
-        <div class="text-center mt-3">
-            <button type="button" 
-            id="uploadButton" 
-            class="btn btn-light btn-lg px-5 shadow-sm" 
-            style="color: #6f42c1; font-weight: bold; border-radius: 25px;"
-             onclick="document.getElementById('colorForm').submit();"
-             href="{{url_for('extract')}}">Detect Colors</button>
-        </div>
-
-        <!-- Uploaded Image Display -->
-        <div id="imageDisplay" class="mt-5" style="display: none;">
-            <h3 class="text-center" style="font-size: 1.5rem; font-weight: bold;">Uploaded Image</h3>
-            <div class="text-center mt-3">
-                <img id="uploadedImage" src="" alt="Uploaded Image" class="img-fluid rounded shadow" style="max-width: 80%; border: 3px solid #fff;">
-            </div>
-        </div>
-    </div>
-</main>
-
-{% block scripts %}
-<script>
-    document.getElementById('imageInput').addEventListener('change', function(event) {
-        const fileInput = event.target;
-        const file = fileInput.files[0];
-        
-        if (file) {
-            const filePath = file.name; // Get the file name (path can be accessed only server-side)
-
-            // Remove any existing file display paragraph
-            const existingFileDisplay = fileInput.closest('form').querySelector('p');
-            if (existingFileDisplay) {
-                existingFileDisplay.remove();
-            }
-
-            // Display file name below the form
-            const fileDisplay = document.createElement('p');
-            fileDisplay.innerText = `Selected File: ${filePath}`;
-            fileDisplay.style.fontSize = '1rem';
-            fileDisplay.style.color = '#fff';
-            fileDisplay.style.fontWeight = '500';
-            fileInput.closest('form').appendChild(fileDisplay);
-        }
-    });
-</script>
-{% endblock %}
 
 {% endblock %}
