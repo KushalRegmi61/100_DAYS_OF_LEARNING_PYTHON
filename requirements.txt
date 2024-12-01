@@ -17,3 +17,5 @@ requests
 gtts 
 PyPDF2
 Pillow
+numpy
+pyautogui
