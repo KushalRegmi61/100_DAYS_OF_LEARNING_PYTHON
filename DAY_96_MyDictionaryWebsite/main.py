@@ -21,13 +21,24 @@ class SearchForm(FlaskForm):
 
 
 
+@app.route("/", methods=["GET", "POST"])
+def home():
+   return render_template("homepage.html")
 
 
-data = input('Enter the data: ')
 
 
-response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{data}")
 
-response.raise_for_status()
-print(response.status_code)
-print(response.json())
+# runnning the app
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
+
+
+# data = input('Enter the data: ')
+
+
+# response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{data}")
+
+# response.raise_for_status()
+# print(response.status_code)
+# print(response.json())
