@@ -1,0 +1,112 @@
+@charset "utf-8";
+
+
+html, body {
+  height: 100%;          /* Ensure the body and html fill the full height */
+  margin: 0;             /* Remove any default margin */
+  display: flex;         /* Use Flexbox to manage layout */
+  flex-direction: column; /* Stack children vertically */
+}
+.wrapper {
+  flex: 1;               /* Pushes the footer to the bottom when content is insufficient */
+  display: flex;         /* Allows flexibility for additional layout within the wrapper */
+  flex-direction: column;
+}
+footer {
+  flex-shrink: 1;        /* Prevents footer from shrinking or overlapping */
+}
+
+
+/* Base Colors and Gradients */
+html {
+  --section-background-color: linear-gradient(
+    to bottom left,
+    rgba(17, 16, 16, 0.58),
+    rgba(12, 8, 24, 0.9)
+  );
+
+  --image-gradient: linear-gradient(
+    to bottom left,
+    rgba(17, 16, 16, 0.68),
+    rgba(12, 10, 22, 0.86)
+  );
+
+  --imp-text-color: #c770f0;
+}
+
+
+
+/* Headings */
+.heading {
+  font-family: "Georgia", serif;
+  font-style: normal;
+  font-size: 3rem; /* Larger heading for better impact */
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 2rem; /* Adds space below the heading */
+}
+
+/* Subheading */
+.subheading {
+  font-family: "Open Sans", sans-serif;
+  font-style: normal;
+  font-size: 1.75rem; /* Slightly larger subheading */
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+}
+
+/* secheading */
+.secheading {
+  font-family: "Roboto", sans-serif;
+  font-style: normal;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+/* Body Text */
+.body-text {
+  font-family: "Georgia", serif;
+  font-style: normal;
+  font-size: large;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  color: #ffffff;
+  text-align: justify;
+  margin-bottom: 1.5rem; /* Adds spacing between paragraphs */
+}
+
+/* Button Styling */
+.btn {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.5em 1.2em;
+  border: 1px solid var(--imp-text-color);
+  color: var(--imp-text-color);
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background-color: var(--imp-text-color);
+  color: #ffffff;
+}
+
+/* Task Due Date */
+.text-muted {
+  color: #aaa; /* Lighter gray for due dates */
+  font-family: "Georgia", serif;
+  font-style: normal;
+  font-size: 1rem;
+
+}
