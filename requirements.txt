@@ -20,3 +20,4 @@ Pillow
 numpy
 pyautogui
 cloudmersive-barcode-api-client
+cloudmersive-validate-api-client
