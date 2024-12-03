@@ -19,3 +19,4 @@ PyPDF2
 Pillow
 numpy
 pyautogui
+cloudmersive-barcode-api-client
