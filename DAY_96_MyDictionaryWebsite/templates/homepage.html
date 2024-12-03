@@ -1,7 +1,50 @@
+{% from "bootstrap5/form.html" import render_form %}
 {% extends "base.html" %}
     
     {% block content %}
+    <div class="container"></div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow" style="background-color: #1e1e2f; border: none; border-radius: 10px;">
+                    <div class="card-body p-5">
+                        <div class="page-heading pt-5 text-center">
+                            <h1 class="subheading">Search for a Word, Buddy!</h1>
+                            <span class="body-text" style="color: #d8b4fe;">Enter a word to find its meaning</span>
 
-    Hello There
+                            <!-- Flashed Message Section -->
+                            <div class="container pt-2">
+                                {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-8 col-md-10">
+                                        {% for category, message in messages %}
+                                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endwith %}
+                            </div>
+
+                            <hr style="border-top: 1px solid #d8b4fe; margin: 2rem 0;" />
+                        </div>
+                        
+                        <!-- Displaying the Form  -->
+                        <div class="form-container pt-3 ">
+                            {{ render_form(search_form, novalidate=True) }}
+                        </div>
+
+                        <p class="text-muted pt-4 text-center">
+                            <strong>Warning:</strong> We take words seriously, but not too seriously. Prepare for some linguistic fun.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {% endblock %}
