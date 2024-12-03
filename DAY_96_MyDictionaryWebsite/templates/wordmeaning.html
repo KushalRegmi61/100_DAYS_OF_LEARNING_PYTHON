@@ -1,0 +1,145 @@
+{% from "bootstrap5/form.html" import render_form %}
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg" style="background-color: #222239; border: none; border-radius: 12px;">
+                <div class="card-body p-5 text-light">
+                    <!-- Page Heading -->
+                    <div class="text-center mb-4">
+                        <h1 class="subheading" style="font-size: 2.5rem; color: #ffffff;">Word Explorer</h1>
+                        <p class="body-text text-muted text-center"> Not just definitions—it's a full-on word domination. We know the meaning, we own the vibe.</p>
+                    </div>
+                    <hr style="border-top: 1px solid #d8b4fe; margin: 2rem 0;" />
+
+                    
+
+                    <!-- Display Word Details -->
+                    {% if data %}
+                        <div>
+                            <!-- Word and License -->
+                            <h2 class="text-white mb-3 secheading" style="font-size: 2rem; text-transform: none;">{{ data[0].word | capitalize }}</h2>
+                            {% if data[0].license %}
+                                <p class="text-muted">
+                                    <i class="fas fa-balance-scale"></i>
+                                    Licensed under: 
+                                    <a href="{{ data[0].license.url }}" target="_blank" class="text-decoration-underline" style="color: #6c63ff;">
+                                        {{ data[0].license.name }}
+                                    </a>
+                                </p>
+                            {% endif %}
+
+                             <hr style="border-top: 1px solid #d8b4fe; margin: 2rem 0;" />
+                            
+                            <!-- Phonetics Section -->
+                            <h4 class="mt-4 subheading" style="color: #6c63ff;">Phonetics</h4>
+                            {% if data[0].phonetics %}
+                                <ul class="list-unstyled body-text">
+                                    {% for phonetic in data[0].phonetics %}
+                                        <li class="mb-3">
+                                            <!-- Row to align text and audio -->
+                                            <div class="row align-items-center">
+                                                <!-- Phonetic Text on the Left -->
+                                                {% if phonetic.text and phonetic.audio %}
+                                                <div class="col-8">
+                                                        <span style="font-size: 1.2rem; color: #ffffff;">
+                                                            <strong>Text:</strong> {{ phonetic.text }}
+                                                        </span>
+                                                </div>
+                                                
+                                                <!-- Listen Button on the Right -->
+                                                <div class="col-4 text-end">
+                                                        <a href="{{ phonetic.audio }}" target="_blank" class="btn btn-sm" style="background-color: #6c63ff; color: #ffffff; border: none;">
+                                                            <i class="fas fa-volume-up"></i> Listen
+                                                        </a>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No phonetics  available for this word.</p>
+                            {% endif %}
+
+                            
+                            <hr style="border-top: 1px solid #d8b4fe; margin: 2rem 0;" />
+                            
+                            <!-- Meanings Section -->
+                            <h4 class="mt-4 subheading" style="color: #6c63ff;">Meanings</h4>
+                            {% if data[0].meanings %}
+                                <div class="accordion body-text" id="meaningsAccordion">
+                                    {% for meaning in data[0].meanings %}
+                                        <div class="accordion-item" style="background-color: #1e1e2f; border: 1px solid #6c63ff;">
+                                            <h5 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}" style="background-color: #6c63ff; color: white;">
+                                                    {{ meaning.partOfSpeech | capitalize }}
+                                                </button>
+                                            </h5>
+                                            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#meaningsAccordion">
+                                                <div class="accordion-body">
+                                                    <ul>
+                                                        {% for definition in meaning.definitions %}
+                                                            <li class="mb-2">
+                                                                <strong>Definition:</strong> {{ definition.definition }}
+                                                                {% if definition.example %}
+                                                                    <p><em>Example:</em> {{ definition.example }}</p>
+                                                                {% endif %}
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+
+                                                    <!-- Synonyms -->
+                                                    {% if meaning.synonyms %}
+                                                        <p><strong>Synonyms:</strong> {{ meaning.synonyms | join(", ") }}</p>
+                                                    {% endif %}
+
+                                                    <!-- Antonyms -->
+                                                    {% if meaning.antonyms %}
+                                                        <p><strong>Antonyms:</strong> {{ meaning.antonyms | join(", ") }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No meanings available for this word.</p>
+                            {% endif %}
+                            
+                            <hr style="border-top: 1px solid #d8b4fe; margin: 2rem 0;" />
+                            <!-- Source URLs Section -->
+                            <h4 class="mt-4 subheading" style="color: #6c63ff;">Source</h4>
+                            {% if data[0].sourceUrls %}
+                                <ul class="list-unstyled body-text">
+                                    {% for url in data[0].sourceUrls %}
+                                        <li>
+                                            <a href="{{ url }}" target="_blank" class="text-decoration-underline" style="color: #6c63ff;">{{ url }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No source URLs available.</p>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <!-- No Data Available -->
+                        <div class="text-center">
+                            <p class="text-muted">No data available. Please search for a word to see its details.</p>
+                        </div>
+                    {% endif %}
+                    <hr style="border-top: 1px solid #d8b4fe; margin: 2rem 0;" />
+                    
+                    <!-- Back to Search Button -->
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('home') }}" class="btn btn-outline-light">
+                            <i class="fas fa-arrow-left"></i> Back to Search
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
