@@ -100,6 +100,8 @@ def organize_file(file_path):
                 logging.error(f"Failed to move {file_name}: {e}")  # Log the error
                 print(f"Failed to move {file_name}")  # Print a message to the console
                 return
+        time.sleep(1) # Wait for a while before moving the file
+
     if not moved:  # If no category matched, move to "Others"
         try:
             dest_path = os.path.join(DOWNLOADS_FOLDER, "Others", file_name)
