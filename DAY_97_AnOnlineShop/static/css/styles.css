@@ -31,7 +31,7 @@ html {
     rgba(12, 10, 22, 0.86)
   );
 
-  --imp-text-color: #c770f0;
+  --imp-text-color: #006F51;
 }
 
 
@@ -129,7 +129,7 @@ html {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #ffffff;
+  color: rgb(0, 45, 37);
   margin-bottom: 1.5rem;
 }
 
@@ -152,7 +152,7 @@ html {
   font-weight: 400;
   letter-spacing: 0.04em;
   line-height: 1.6;
-  color: #ffffff;
+  color: rgb(18, 25, 33);
   text-align: justify;
   margin-bottom: 1.5rem; /* Adds spacing between paragraphs */
 }
@@ -327,7 +327,7 @@ list-inline-item a {
 }
 
 #goToTop:hover {
-  background-color: #c770f0;
+  background-color: #002D25;
   color: white;
 }
 
