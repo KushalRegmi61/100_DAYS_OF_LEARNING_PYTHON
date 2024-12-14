@@ -359,7 +359,7 @@ list-inline-item a {
 
 /* Task Due Date */
 .text-muted {
-    color: #aaa; /* Lighter gray for due dates */
+    color: #eee; /* Lighter gray for due dates */
     font-family: "Georgia", serif;
     font-style: normal;
     font-size: 1rem;
