@@ -191,7 +191,6 @@ def products_category():
         product = Product.query.filter_by(category=category).first()
         category_images[category] = product.image_url  # Add category and image_url to dictionary
 
-    print(category_images)
 
     return render_template('products_category.html', category_images=category_images)
     
