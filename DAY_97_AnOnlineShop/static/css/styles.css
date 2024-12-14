@@ -69,7 +69,7 @@ html {
   font-family: "Leckerli One", cursive;
   font-size: 2rem;
   font-weight: 800; /* Make the text bolder */
-  color: #00bcd4; /* Light teal/cyan color to stand out from the rest */
+  color: #eee; /* Light teal/cyan color to stand out from the rest */
   letter-spacing: 2px; /* Spacing between the letters for a clean, modern look */
   transition: color 0.3s ease, transform 0.3s ease; /* Smooth transitions for hover effects */
 }
@@ -331,28 +331,71 @@ list-inline-item a {
   color: white;
 }
 
-/* Task Card Styles */
-.card {
-    background-color: #1f1f1f; /* Dark card background */
-    border-radius: 8px; /* Rounded corners */
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover */
+/* Page Header */
+.page-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #002d25;
+  border-left: 4px solid #00ffa3;
+  padding-left: 10px;
+  margin-bottom: 20px;
 }
 
-/* Task Card Hover Effect */
-.card:hover {
-    transform: translateY(-5px); /* Slightly lift the card */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+/* Card Container */
+.category-card {
+  background-color:  rgba(0, 45, 33, 0.9);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  overflow: hidden;
 }
 
-/* Task Title */
+/* Hover Effects */
+.category-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  background-color: #242424;
+}
+
+.category-card .card-img-top {
+  border-radius: 12px 12px 0 0;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.category-card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+/* Card Title */
 .card-title {
-    color: white; /* White text for task title */
-    font-size: 1.1rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  text-transform: capitalize;
+}
+
+/* Link Styling */
+.category-card-link {
+  text-decoration: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .category-card .card-img-top {
+    height: 150px;
+  }
 }
 
 
