@@ -5,6 +5,7 @@ from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename # Secure filename
 from flask_sqlalchemy import SQLAlchemy, pagination
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, ForeignKey
@@ -16,7 +17,7 @@ import os
 from dotenv import load_dotenv
 from smtplib import SMTP
 # importing forms from forms.py
-from forms import RegisterForm, LoginForm
+from forms import RegisterForm, LoginForm, AddProductForm, UpdateProductForm
 
 
 # Load environment variables
@@ -27,10 +28,17 @@ MY_EMAIL = os.getenv("EMAIL")
 MY_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
 
+
+
 # create a new flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "this-is-a-secret-key")
 
+
+# Configure upload folder
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'assets', 'uploads')  # Define upload folder
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Create upload folder if it doesn't exist
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # create a new bootstrap object
 Bootstrap5(app)
@@ -71,6 +79,17 @@ class User(UserMixin, db.Model):
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
     # orders = db.relationship('Order', back_populates='user')
+
+# Creating a product class
+class Product(db.Model):
+    __tablename__ = 'product'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    image_url = db.Column(db.String(100), nullable=False)
+    # orders = db.relationship('Order', back_populates='product')
 
 
 # Initializing the database
@@ -130,6 +149,52 @@ def logout():
     logout_user()
     flash("You have been logged out.", 'success')
     return redirect(url_for('home'))
+
+# creating a route for adding a new product
+@app.route('/add_product', methods=['GET', 'POST'])
+def add_product():
+    form = AddProductForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        category = form.category.data
+        price = float(form.price.data)
+        description = form.description.data
+
+
+         # Save uploaded file
+        file = form.image_url.data
+        file_name = file.filename  # Get file name
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+        file.save(file_path)
+
+        uploaded_image = f"assets/uploads/{file_name}"  # Path for rendering
+        
+
+        
+        # Create and add the new product to the database
+        new_product = Product(name=name, category=category, price=price, description=description, image_url=uploaded_image)
+        db.session.add(new_product)
+        db.session.commit()
+        
+        flash("Product added successfully.", 'success')
+        return redirect(url_for('home'))
+    return render_template('addnewproduct.html', form=form)
+
+# Creating a route to view all products category
+@app.route('/products_category')
+def products_category():
+    products_category = db.session.query(Product.category).distinct().all()
+    products_category = [product[0] for product in products_category]  # Convert list of tuples to list of strings
+    
+    category_images = {}
+    for category in products_category:
+        product = Product.query.filter_by(category=category).first()
+        category_images[category] = product.image_url  # Add category and image_url to dictionary
+
+    print(category_images)
+
+    return render_template('products_category.html', category_images=category_images)
+    
 
 # runnning the app
 if __name__ == "__main__":
