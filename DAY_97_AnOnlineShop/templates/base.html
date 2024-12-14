@@ -85,7 +85,7 @@
           <!-- manage list  -->
            {% if current_user.id ==1 %}
             <li class="nav-item">
-                <a class="nav-link px-3" href="/">
+                <a class="nav-link px-3" href="{{url_for('add_product')}}">
                   <i class="fas fa-plus-circle me-2"></i>Add item
                 </a>
             </li>
