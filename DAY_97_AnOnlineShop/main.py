@@ -193,6 +193,14 @@ def products_category():
 
 
     return render_template('products_category.html', category_images=category_images)
+
+# Creating a route to view all products in a category
+@app.route('/products')
+def products():
+    pass
+    # category = request.args.get('category')
+    # products = Product.query.filter_by(category=category).all()
+    # return render_template('products.html', products=products, category=category)
     
 
 # runnning the app
