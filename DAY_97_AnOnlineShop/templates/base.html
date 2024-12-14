@@ -50,7 +50,7 @@
   </head>
   
 
-  <body >
+  <body>
     <div class="wrapper">
       <!-- Navigation-->
       <nav class="navbar navbar-expand-lg navbar-dark py-2" id="mainNavs" style="background: linear-gradient(135deg, #002d25, #004d3d);">
@@ -83,13 +83,19 @@
           <div class="d-flex align-items-center">
 
           <!-- manage list  -->
-
+           {% if current_user.id ==1 %}
+            <li class="nav-item">
+                <a class="nav-link px-3" href="/">
+                  <i class="fas fa-plus-circle me-2"></i>Add item
+                </a>
+            </li>
+            {% endif %}
 
           </div>
 
           <!-- Right Section: Extra Navigation Links -->
           <div class="d-flex align-items-center">
-            
+              {% if current_user.is_authenticated %}
             <!-- user profile display section -->
             <li class="nav-item dropdown">
             <a
@@ -100,7 +106,7 @@
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <i class="fas fa-user me-2"></i>User
+              <i class="fas fa-user me-2"></i>{{ current_user.name }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li>
@@ -118,12 +124,21 @@
             <hr class="dropdown-divider" />
               </li>
               <li>
-            <a class="dropdown-item" href="#">
+            <a class="dropdown-item" href="{{url_for('logout')}}">
               <i class="fas fa-sign-out-alt me-2"></i>Logout
             </a>
               </li>
               </ul>
           </li>
+          {% else %}
+          <!-- login -->
+          <li class="nav-item">
+              <a class="nav-link px-3" href="/login">
+              <i class="fas fa-sign-in-alt me-2"></i>Login
+              </a>
+          </li>
+          {% endif %}
+          
           <!-- Add new todo List -->
           <li class="nav-item">
               <a class="nav-link px-3 " href="">
@@ -156,7 +171,7 @@
                   <a href="#" class="text-decoration-none">
                       <h5 class="fw-bold mb-1" style="font-family: 'Poppins', sans-serif; color: #fff;">JAMUNA | SUPPLIERS</h5>
                   </a>
-                  <p class="small text-muted mb-0" style="font-family: 'Poppins', sans-serif; color: #a0a0a0;">Build Your Dream Home</p>
+                  <p class="small  mb-0" style="font-family: 'Poppins', sans-serif; color: #eee;">| Build Your Dream Home</p>
               </div>
               <!-- Social Media Links -->
               <div class="col-md-4 text-center">
