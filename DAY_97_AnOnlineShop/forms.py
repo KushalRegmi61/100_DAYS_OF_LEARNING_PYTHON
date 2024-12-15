@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, FileField, DecimalField
+from wtforms import StringField, SubmitField, PasswordField, FileField, DecimalField, IntegerField
 from wtforms.validators import DataRequired, URL, ValidationError, Email, Length, NumberRange
 from flask_wtf.file import FileField, FileAllowed
 from flask_ckeditor import CKEditorField
@@ -97,3 +97,15 @@ class UpdateProductForm(FlaskForm):
     submit = SubmitField(label="Update Product", render_kw={"size": 30})
                           
 
+# Quantity form for adding products to cart
+class QuantityForm(FlaskForm):
+    quantity = IntegerField('Quantity',
+                            validators=[DataRequired(), NumberRange(min=1, message="Quantity must be a positive number")],
+                            render_kw={"size": 30, "placeholder": "Enter quantity"}
+
+                            )
+    submit = SubmitField(label="Add to Cart", render_kw={"size": 30})
+
+# creating a form to update product
+class UpdateQuantityForm(QuantityForm):
+    submit = SubmitField(label="Update Quantity", render_kw={"size": 30})
