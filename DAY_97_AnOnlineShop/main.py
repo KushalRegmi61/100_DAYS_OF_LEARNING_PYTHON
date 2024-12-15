@@ -17,7 +17,7 @@ import os
 from dotenv import load_dotenv
 from smtplib import SMTP
 # importing forms from forms.py
-from forms import RegisterForm, LoginForm, AddProductForm, UpdateProductForm
+from forms import RegisterForm, LoginForm, AddProductForm, UpdateProductForm, QuantityForm, UpdateQuantityForm
 
 
 # Load environment variables
@@ -54,6 +54,14 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(user_id)
 
+# # Create a decorator to check if a user is an admin
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated and not current_user.id== 1:
+            abort(403)  # Forbidden access
+        return f(*args, **kwargs)
+    return decorated_function
 
 # creating a declearative base
 class Base(DeclarativeBase):
@@ -79,6 +87,7 @@ class User(UserMixin, db.Model):
     address = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100), nullable=False)
     # orders = db.relationship('Order', back_populates='user')
+    cart = db.relationship('Cart', back_populates='user') # Add cart relationship
 
 # Creating a product class
 class Product(db.Model):
@@ -90,7 +99,18 @@ class Product(db.Model):
     description = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(100), nullable=False)
     # orders = db.relationship('Order', back_populates='product')
+    cart = db.relationship('Cart', back_populates='product') # Add cart relationship
 
+
+# creating a cart class
+class Cart(db.Model):
+    __tablename__ = 'cart'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+    product_id = db.Column(db.Integer, ForeignKey('product.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    user = db.relationship('User', back_populates='cart') # Add user relationship
+    product = db.relationship('Product', back_populates='cart') # Add product relationship
 
 # Initializing the database
 with app.app_context():
@@ -108,17 +128,30 @@ def home():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        name = form.name.data
         email = form.email.data
-        password = form.password.data
-        address = form.address.data
-        phone_number = form.phone_number.data
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
-        new_user = User(name=name, email=email, password=hashed_password, address=address, phone_number=phone_number)
-        db.session.add(new_user)
-        db.session.commit()
-        flash("You have successfully registered.login to continue.", 'success')
-        return redirect(url_for('login'))
+        name = form.name.data
+        new_user = User(
+            email=email,
+            password=generate_password_hash(form.password.data, method='pbkdf2:sha256', salt_length=8),
+            name=name
+        )
+        #check if the user already exists
+        user = db.session.query(User).filter_by(email=email).first()
+        if user:
+            flash("User already exists! Try login", "danger")
+            return redirect(url_for('login'))
+        
+        #add the user to the database
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            flash(f"{new_user.name} registered successfully!", "success")
+            return redirect(url_for('login'))
+        except Exception as e:
+            flash("An error occurred while registering the user.", "danger")
+            db.session.rollback()
+            return redirect(url_for('register'))
+
     return render_template('register.html', form=form)
 
 
@@ -197,11 +230,105 @@ def products_category():
 # Creating a route to view all products in a category
 @app.route('/products')
 def products():
-    pass
-    # category = request.args.get('category')
-    # products = Product.query.filter_by(category=category).all()
-    # return render_template('products.html', products=products, category=category)
+    category = request.args.get('category')
+    products = Product.query.filter_by(category=category).all()
+    return render_template('products.html', products=products, category=category)
+
+# Creating a route to view a single product
+@app.route('/cart')
+def cart():
+    # getting all the products in the cart by user_id
+    # products = Cart.query.filter_by(user_id=current_user.id).all()
+
+    if not current_user.is_authenticated:
+        flash("You need to login first", "danger")
+        return redirect(url_for('login'))
+    # Logic for displaying the cart if authenticated
+    return render_template('cart.html')
+
+# # Creating a route to add a product to the cart
+# @app.route('/add-to-cart/<int:id>')
+# def add_to_cart(id):
+#     if not current_user.is_authenticated:
+#         flash("You need to login first", "danger")
+#         return redirect(url_for('login'))
     
+
+#     try:
+#         product = Product.query.get(id)
+#         if not product:
+#             flash("Product not found.", "danger")
+#             return redirect(url_for('products'))
+        
+#         cart = Cart(user_id=current_user.id, product_id=product.id, quantity=1)
+#         db.session.add(cart)
+#         db.session.commit()
+#         flash("Product added to cart successfully.", "success")
+#     except Exception as e:
+#         db.session.rollback()
+#         flash(f"An error occurred: {str(e)}", "danger")
+#     return redirect(url_for('product_details', id=id))
+
+
+    
+# Creating a route to view a single product
+@app.route('/product_details/<int:id>', methods=['GET', 'POST'])
+def product_details(id):
+    # Retrieve the product by ID
+    product = Product.query.get_or_404(id)
+
+    # Render the form for adding quantity to cart
+    form = QuantityForm()
+
+    if form.validate_on_submit():
+        quantity = form.quantity.data
+
+        # Ensure the user is authenticated
+        if not current_user.is_authenticated:
+            flash("You need to log in first to add items to the cart.", "danger")
+            return redirect(url_for('login'))
+
+        # Check if the user already has the product in their cart
+        cart_item = Cart.query.filter_by(user_id=current_user.id, product_id=id).first()
+        if cart_item:
+            # Update the quantity of the existing cart item
+            cart_item.quantity += quantity
+            db.session.commit()
+            flash(f"Added {quantity} more of '{product.name}' to your cart.", "success")
+
+        else:
+            # Add a new cart item for the user
+            new_cart_item = Cart(user_id=current_user.id, product_id=id, quantity=quantity)
+            db.session.add(new_cart_item)
+            db.session.commit()
+            flash(f"Added '{product.name}' to your cart successfully.", "success")
+
+        # Redirect to the same product details page to prevent resubmission
+        return redirect(url_for('product_details', id=id))
+
+    return render_template('product_details.html', product=product, form=form)
+
+
+@app.route('/modify-product/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def modify_product(id):
+    product = Product.query.get_or_404(id)
+    if request.method == 'POST':
+        # Update product details logic here
+        pass
+    return render_template('modify_product.html', product=product)
+
+@app.route('/delete-product/<int:id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_product(id):
+    product = Product.query.get_or_404(id)
+    db.session.delete(product)
+    db.session.commit()
+    flash('Product deleted successfully.', 'success')
+    return redirect(url_for('products'))
+
 
 # runnning the app
 if __name__ == "__main__":
