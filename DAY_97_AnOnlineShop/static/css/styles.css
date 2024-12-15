@@ -333,11 +333,11 @@ list-inline-item a {
 
 /* Page Header */
 .page-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 1.8rem;
   font-weight: bold;
   color: #002d25;
-  border-left: 4px solid #00ffa3;
+  border-left: 4px solid   rgba(0, 45, 33, 0.9);
   padding-left: 10px;
   margin-bottom: 20px;
 }
@@ -471,3 +471,4 @@ footer p {
 .icon-link:active {
   color: #6c5ce7; /* A darker purple for the active state */
 }
+
