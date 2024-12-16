@@ -85,3 +85,12 @@ class QuantityForm(FlaskForm):
 # creating a form to update product
 class UpdateQuantityForm(QuantityForm):
     submit = SubmitField(label="Update Quantity", render_kw={"size": 30})
+
+
+# creating form to contact us
+class ContactForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()], render_kw={"size": 30, "placeholder": "Enter your name"})
+    email = StringField('Email', validators=[DataRequired(), Email()], render_kw={"size": 30, "placeholder": "Enter your email"})
+    subject = StringField('Subject', validators=[DataRequired()], render_kw={"size": 30, "placeholder": "Enter subject"})
+    message = CKEditorField('Message', validators=[DataRequired()], render_kw={"size": 30, "placeholder": "Enter message"})
+    submit = SubmitField(label="Send", render_kw={"size": 30})
