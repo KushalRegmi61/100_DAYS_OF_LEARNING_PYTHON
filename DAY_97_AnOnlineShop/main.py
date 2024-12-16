@@ -187,7 +187,7 @@ def add_product():
     form = AddProductForm()
     if form.validate_on_submit():
         name = form.name.data
-        category = form.category.data
+        category = (form.category.data).title()
         price = float(form.price.data)
         description = form.description.data
 
@@ -228,7 +228,7 @@ def products_category():
 # Creating a route to view all products in a category
 @app.route('/products')
 def products():
-    category = request.args.get('category')
+    category = (request.args.get('category')).title()
     products = Product.query.filter_by(category=category).all()
     return render_template('products.html', products=products, category=category)
 
