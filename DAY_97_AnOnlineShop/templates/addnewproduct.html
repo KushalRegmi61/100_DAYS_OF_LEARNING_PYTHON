@@ -18,6 +18,11 @@
                     <div class="card-body p-5">
                         <!-- Flash Message Section -->           
                         <div class="form-container secheading pt-3" style="color: #eee; font-weight: bold; font-size: 1rem;">
+                            <!-- Configuring the Cke-Editor -->
+                            {{ ckeditor.load() }}
+                            {{ ckeditor.config(name='description') }}
+
+                            <!-- Rendering the form -->
                             {{ render_form(form, novalidate=True) }}
                         </div>
                     </div>
