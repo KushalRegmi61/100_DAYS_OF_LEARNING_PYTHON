@@ -4,7 +4,22 @@
 <div class="container my-5">
     <h3 class="subheading py-3 text-center">Shopping Cart</h3>
     <hr>
-
+    <!-- Flash Message Section -->
+    <div class="col-12 text-center">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="alert-container">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" 
+            style="border-radius: 8px;   border: none; text-align: center;">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="color: #d8b4fe;"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
     {% if cart_items|length == 0 %}
     <!-- Empty Cart Section -->
     <div class="text-center py-5">
@@ -22,23 +37,6 @@
                        border-radius: 12px; 
                        border: 1px solid rgba(255, 255, 255, 0.1);">
                 <div class="card-body">
-                    <!-- Flash Message Section -->
-                    <div class="py-2 text-center">
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                        <div class="alert-container">
-                            {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" 
-                            style="border-radius: 8px;   border: none; text-align: center;">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="color: #d8b4fe;"></button>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                        {% endwith %}
-                    </div> 
-
                     {% for item in cart_items %}
                     <div class="row g-0 align-items-center border-bottom pb-3 mb-3">
                         <div class="col-3 text-center">
@@ -138,11 +136,11 @@
                     <hr>
                     <p class="d-flex justify-content-between body-text">
                         <span>Total Items:</span>
-                        <span>{{ cart_items|length }}</span>
+                        <span>{{ total_quantity }}</span>
                     </p>
                     <p class="d-flex justify-content-between body-text">
                         <span>Subtotal:</span>
-                        <span>Nrs. {{ cart_total }}</span>
+                        <span>Nrs. {{ total_price }}</span>
                     </p>
                     <hr>
                     <a href="" 
