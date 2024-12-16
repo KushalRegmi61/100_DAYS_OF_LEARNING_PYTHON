@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-5">
+    <h3 class="subheading py-3 text-center">Shopping Cart</h3>
+    <hr>
+
+    {% if cart_items|length == 0 %}
+    <!-- Empty Cart Section -->
+    <div class="text-center py-5">
+        <p class="text-muted fs-5">Your cart is empty. Add some items!</p>
+        <a href="{{ url_for('products_category') }}" class="btn btn-outline-primary btn-lg">Browse Products</a>
+    </div>
+    {% else %}
+
+    <!-- Cart Items and Order Summary -->
+    <div class="row">
+        <!-- Cart Items Section -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm mb-4" 
+                style="background-color: #eee; 
+                       border-radius: 12px; 
+                       border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div class="card-body">
+                    <!-- Flash Message Section -->
+                    <div class="py-2 text-center">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        <div class="alert-container">
+                            {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" 
+                            style="border-radius: 8px;   border: none; text-align: center;">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="color: #d8b4fe;"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div> 
+
+                    {% for item in cart_items %}
+                    <div class="row g-0 align-items-center border-bottom pb-3 mb-3">
+                        <div class="col-3 text-center">
+                            <img src="{{ url_for('static', filename=item.product.image_url) }}" 
+                                 alt="{{ item.product.name }}" 
+                                 class="img-fluid rounded" 
+                                 style="max-height: 100px; object-fit: cover;">
+                        </div>
+                        <div class="col-7 px-3">
+                            <a href="{{ url_for('product_details', id=item.product.id) }}" 
+                               class="text-decoration-none">
+                                <h5 class="text-truncate mb-1 card-title" 
+                                    style="color: rgba(0, 45, 33, 0.9); 
+                                           text-decoration: underline; 
+                                           cursor: pointer;">
+                                    {{ item.product.name }}
+                                </h5>
+                            </a>
+                            <p class="text-muted mb-1">
+                                <strong>Price:</strong> Nrs. {{ item.product.price }}
+                            </p>
+                            <p class="text-muted mb-1">
+                                <strong>Total:</strong> Nrs. {{ item.product.price * item.quantity }}
+                            </p>
+                            <p class="text-muted mb-1">
+                                <strong>Qty:</strong>
+                                <form action="{{ url_for('update_cart_item', id=item.id) }}" method="post" class="d-inline">
+                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control d-inline-block" style="width: 70px;" required>
+                                    <button type="submit" class="btn btn-primary btn-sm" title="Update item" style="font-size: 0.7rem;">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </form>
+                            </p>
+                        </div>
+                        <div class="col-2 text-center mt-3">
+                            <!-- Remove Button -->
+                            <button class="btn btn-danger btn-sm" 
+                                    title="Remove from cart" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#removeItemModal{{ item.id }}" 
+                                    aria-label="Remove item">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <!-- Confirmation Modal for Remove Item -->
+                        <div class="modal fade" 
+                             id="removeItemModal{{ item.id }}" 
+                             tabindex="-1" 
+                             aria-labelledby="removeItemModalLabel{{ item.id }}" 
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title subheading" 
+                                            id="removeItemModalLabel{{ item.id }}">
+                                            Confirm Remove Item
+                                        </h5>
+                                        <button type="button" 
+                                                class="btn-close" 
+                                                data-bs-dismiss="modal" 
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body body-text">
+                                        Are you sure you want to remove {{ item.product.name }} from your cart?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" 
+                                                class="btn btn-secondary" 
+                                                data-bs-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <a href="{{ url_for('delete_cart_item', id=item.id) }}" 
+                                           class="btn btn-danger">
+                                            Yes, Remove
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm" 
+                style="background-color: #eee; 
+                       border-radius: 12px; 
+                       border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div class="card-body">
+                    <h5 class="card-title text-center" 
+                        style="color: rgba(0, 45, 33, 0.9);">
+                        Order Summary
+                    </h5>
+                    <hr>
+                    <p class="d-flex justify-content-between body-text">
+                        <span>Total Items:</span>
+                        <span>{{ cart_items|length }}</span>
+                    </p>
+                    <p class="d-flex justify-content-between body-text">
+                        <span>Subtotal:</span>
+                        <span>Nrs. {{ cart_total }}</span>
+                    </p>
+                    <hr>
+                    <a href="" 
+                       class="btn btn-success btn-lg w-100">
+                        Proceed to Checkout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+</div>
+
+{% endblock %}
