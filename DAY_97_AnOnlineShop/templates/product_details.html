@@ -39,7 +39,7 @@
             <!-- User Actions -->
             <div class="d-flex gap-2 my-4">
                 <!-- Add to Cart Button -->
-                <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#newTaskModal">
+                <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addToCartModal">
                     <i class="fas fa-cart-plus"></i> Add to Cart
                 </button>
                 <!-- Buy Now Button -->
@@ -49,14 +49,14 @@
             </div>
 
             <!-- Modal for Add to Cart -->
-            <div class="modal fade" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+            <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content" style="background: linear-gradient(135deg, #002d25, #004d3d);">
                         <div class="modal-header">
-                            <h5 class="modal-title subheading text-center" style="color: #d8b4fe; font-size: 1.3rem; font-weight: bold;" id="newTaskModalLabel">Add to Cart</h5>
+                            <h5 class="modal-title subheading text-center" style="color: #d8b4fe; font-size: 1.3rem; font-weight: bold;" id="addToCartModalLabel">Add to Cart</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body secheading pt-3"  style="color: #eee; font-weight: bold; font-size: 1rem;">
+                        <div class="modal-body secheading pt-3" style="color: #eee; font-weight: bold; font-size: 1rem;">
                             {{ render_form(form, novalidate=True) }}
                         </div>
                     </div>
@@ -64,10 +64,11 @@
             </div>
 
             <!-- Product Description -->
-            <!-- Despription -->
             <hr class="my-4">
             <h3 class="product-subtitle subheading" style="font-size: 1.3rem; font-weight: bold;">Description</h3>
-            <p class="product-description body-text" style="font-size: .9rem;">{{ product.description }}</p>
+            <div class="product-description body-text ck-content" style="font-size: .9rem;">
+                {{ product.description |safe }}
+            </div>
 
             <!-- Admin Actions (Visible Only to Admins) -->
             {% if current_user.id == 1 %}
@@ -76,35 +77,50 @@
                 <a href="{{ url_for('modify_product', id=product.id) }}" class="btn btn-warning">
                     <i class="fas fa-edit"></i> Update
                 </a>
-                <form action="{{ url_for('delete_product', id=product.id) }}" method="POST" class="d-inline">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt"></i> Delete 
-                    </button>
-                </form>
+                <!-- Delete Button with Modal -->
+                <button class="btn btn-danger" 
+                        title="Delete Product" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#deleteProductModal{{ product.id }}" 
+                        aria-label="Delete Product">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+
+                <!-- Confirmation Modal for Delete Product -->
+                <div class="modal fade" 
+                     id="deleteProductModal{{ product.id }}" 
+                     tabindex="-1" 
+                     aria-labelledby="deleteProductModalLabel{{ product.id }}" 
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title subheading" id="deleteProductModalLabel{{ product.id }}">
+                                    Confirm Delete Product
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body body-text">
+                                Are you sure you want to delete {{ product.name }}?
+                            </div>
+                            <div class="modal-footer">
+                                    <button type="button" 
+                                            class="btn btn-secondary" 
+                                            data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+                                    <a href="{{ url_for('delete_product', id=product.id) }}" 
+                                       class="btn btn-danger">
+                                        Yes, Remove
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             {% endif %}
         </div>
     </div>
 </div>
 {% endblock %}
-
-
-<!-- Despription -->
-            <hr class="my-4">
-            <h3 class="product-subtitle subheading" style="font-size: 1.3rem; font-weight: bold;">Description</h3>
-            <p class="product-description body-text" style="font-size: .9rem;">{{ product.description }}</p>
-
-            <!-- Admin Actions (Visible Only to Admins) -->
-            {% if current_user.id == 1 %}
-            <hr class="my-4">
-            <div class="d-flex gap-2">
-                <a href="{{ url_for('modify_product', id=product.id) }}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Update
-                </a>
-                <form action="{{ url_for('delete_product', id=product.id) }}" method="POST" class="d-inline">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt"></i> Delete 
-                    </button>
-                </form>
-            </div>
-            {% endif %}
