@@ -382,8 +382,9 @@ list-inline-item a {
 
 /* Card Title */
 .card-title {
+  font-family: 'Open Sans', sans-serif;
   color: #ffffff;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
   text-transform: capitalize;
