@@ -69,33 +69,9 @@ class AddProductForm(FlaskForm):
     submit = SubmitField(label="Add Product", render_kw={"size": 30})
 
 # creating a form to update product
-class UpdateProductForm(FlaskForm):
-    name =  StringField('Product Name', 
-                        validators=[DataRequired()],
-                         render_kw={"size": 30, "placeholder": "Enter product name"}
-                         )
-    category = StringField('Category',
-                            validators=[DataRequired()],
-                            render_kw={"size": 30, "placeholder": "Enter product category Eg. Basin, Towel"}
-                            )
-    
-    price = StringField('Price',
-                        validators=[DataRequired()],
-                        render_kw={"size": 30, "placeholder": "Enter product price in Nrs. Eg. 1000"}
-                        )
-    
-    description = CKEditorField('Description', 
-                                validators=[DataRequired()],
-                                render_kw={"size": 30, "placeholder": "Enter product description"}
-                                )
-    
-    image_url = FileField('Image URL',
-                            validators=[DataRequired(), URL()],
-                            render_kw={"size": 30, "placeholder": "Choose an image file"}
-                            )
-    
+class UpdateProductForm(AddProductForm):
     submit = SubmitField(label="Update Product", render_kw={"size": 30})
-                          
+
 
 # Quantity form for adding products to cart
 class QuantityForm(FlaskForm):
