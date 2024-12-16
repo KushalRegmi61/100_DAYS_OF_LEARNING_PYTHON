@@ -28,8 +28,6 @@ MY_EMAIL = os.getenv("EMAIL")
 MY_PASSWORD = os.getenv("EMAIL_PASSWORD")
 
 
-
-
 # create a new flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "this-is-a-secret-key")
@@ -235,6 +233,100 @@ def products():
     return render_template('products.html', products=products, category=category)
 
 # Creating a route to view a single product
+@app.route('/product_details/<int:id>', methods=['GET', 'POST'])
+def product_details(id):
+    # Retrieve the product by ID
+    product = Product.query.get_or_404(id)
+
+    # Render the form for adding quantity to cart
+    form = QuantityForm()
+
+    if form.validate_on_submit():
+        quantity = form.quantity.data
+
+        # Ensure the user is authenticated
+        if not current_user.is_authenticated:
+            flash("You need to log in first to add items to the cart.", "danger")
+            return redirect(url_for('login'))
+
+        # Check if the user already has the product in their cart
+        cart_item = Cart.query.filter_by(user_id=current_user.id, product_id=id).first()
+        if cart_item:
+            # Update the quantity of the existing cart item
+            cart_item.quantity += quantity
+            db.session.commit()
+            flash(f"Added {quantity} more of '{product.name}' to your cart.", "success")
+
+        else:
+            # Add a new cart item for the user
+            new_cart_item = Cart(user_id=current_user.id, product_id=id, quantity=quantity)
+            db.session.add(new_cart_item)
+            db.session.commit()
+            flash(f"Added '{product.name}' to your cart successfully.", "success")
+
+        # Redirect to the same product details page to prevent resubmission
+        return redirect(url_for('product_details', id=id))
+
+    return render_template('product_details.html', product=product, form=form)
+
+# creating a route to delete a product
+@app.route('/delete-product/<int:id>')
+@login_required
+@admin_required
+def delete_product(id):
+    product = Product.query.get_or_404(id)
+    try:
+        db.session.delete(product)
+        db.session.commit()
+        flash(f"Product '{product.name}' deleted successfully.", "success")
+        
+    except Exception as e:
+        flash(f"An error occurred while deleting the product:  {product.name}", "danger")
+        db.session.rollback()
+    return redirect(url_for('products_category'))
+
+
+
+@app.route('/modify-product/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def modify_product(id):
+    product = Product.query.get_or_404(id)
+    form = UpdateProductForm(
+        name=product.name,
+        category=product.category,
+        price=product.price,
+        description=product.description
+        )
+    if form.validate_on_submit():
+        product.name = form.name.data
+        product.category = form.category.data
+        product.price = form.price.data
+        product.description = form.description.data
+        # Save uploaded file
+        file = form.image_url.data
+        file_name = file.filename  # Get file name
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+        file.save(file_path)
+
+        uploaded_image = f"assets/uploads/{file_name}"  # Path for rendering
+        product.image_url = uploaded_image
+        try:
+            db.session.commit()
+            flash(f"Product '{product.name}' updated successfully.", "success")
+
+            # Redirect to the same product details page to prevent resubmission
+            return redirect(url_for('product_details', id=id))
+
+        except Exception as e:
+            flash(f"An error occurred while updating the product: {product.name}", "danger")
+            db.session.rollback()
+
+    
+    return render_template('modify_product.html', form=form, product=product)
+
+
+# Creating a route to view all products in the cart
 @app.route('/cart' ,methods=['GET', 'POST'])
 def cart():
     # getting all the products in the cart by user_id
@@ -305,69 +397,6 @@ def delete_cart_item(id):
 
 
     
-# Creating a route to view a single product
-@app.route('/product_details/<int:id>', methods=['GET', 'POST'])
-def product_details(id):
-    # Retrieve the product by ID
-    product = Product.query.get_or_404(id)
-
-    # Render the form for adding quantity to cart
-    form = QuantityForm()
-
-    if form.validate_on_submit():
-        quantity = form.quantity.data
-
-        # Ensure the user is authenticated
-        if not current_user.is_authenticated:
-            flash("You need to log in first to add items to the cart.", "danger")
-            return redirect(url_for('login'))
-
-        # Check if the user already has the product in their cart
-        cart_item = Cart.query.filter_by(user_id=current_user.id, product_id=id).first()
-        if cart_item:
-            # Update the quantity of the existing cart item
-            cart_item.quantity += quantity
-            db.session.commit()
-            flash(f"Added {quantity} more of '{product.name}' to your cart.", "success")
-
-        else:
-            # Add a new cart item for the user
-            new_cart_item = Cart(user_id=current_user.id, product_id=id, quantity=quantity)
-            db.session.add(new_cart_item)
-            db.session.commit()
-            flash(f"Added '{product.name}' to your cart successfully.", "success")
-
-        # Redirect to the same product details page to prevent resubmission
-        return redirect(url_for('product_details', id=id))
-
-    return render_template('product_details.html', product=product, form=form)
-
-# creating a route to delete a product
-@app.route('/delete-product/<int:id>', methods=['POST'])
-@login_required
-@admin_required
-def delete_product(id):
-    product = Product.query.get_or_404(id)
-    try:
-        db.session.delete(product)
-        db.session.commit()
-        flash('Product deleted successfully.', 'success')
-    except Exception as e:
-        flash("An error occurred while deleting the product.", "danger")
-        db.session.rollback()
-    return redirect(url_for('product_details', id=id))
-
-
-@app.route('/modify-product/<int:id>', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def modify_product(id):
-    product = Product.query.get_or_404(id)
-    if request.method == 'POST':
-        # Update product details logic here
-        pass
-    return render_template('modify_product.html', product=product)
-
 
 
 # runnning the app
