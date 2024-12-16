@@ -17,7 +17,7 @@ import os
 from dotenv import load_dotenv
 from smtplib import SMTP
 # importing forms from forms.py
-from forms import RegisterForm, LoginForm, AddProductForm, UpdateProductForm, QuantityForm, UpdateQuantityForm
+from forms import RegisterForm, LoginForm, AddProductForm, UpdateProductForm, QuantityForm, ContactForm
 
 
 # Load environment variables
@@ -331,12 +331,18 @@ def modify_product(id):
 def cart():
     # getting all the products in the cart by user_id
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    
+    # calculate the total quantity of the products in the cart
+    total_quantity = sum([item.quantity for item in cart_items])
+
+    # calculate the total price of the products in the cart
+    total_price = sum([item.product.price * item.quantity for item in cart_items])
 
     if not current_user.is_authenticated:
         flash("You need to login first", "danger")
         return redirect(url_for('login'))
     # Logic for displaying the cart if authenticated
-    return render_template('shoppingcart.html', cart_items = cart_items)
+    return render_template('shoppingcart.html', cart_items = cart_items, total_price=total_price, total_quantity=total_quantity)
 
 # Creating a route to update the quantity of a cart item
 @app.route('/update_cart_item/<int:id>', methods=['POST'])
@@ -396,12 +402,40 @@ def delete_cart_item(id):
     return redirect(url_for('cart'))
 
 
-    
+# Creating a route to contact us
+@app.route('/contact', methods=['GET', 'POST'])
+def contact_us():
+    form = ContactForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        email = form.email.data
+        subject = form.subject.data
+        message = form.message.data
+
+        # Send email
+        try:
+            with SMTP("smtp.gmail.com") as connection:
+                connection.starttls()  # Secure the connection
+                connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+                connection.sendmail(
+                    from_addr=MY_EMAIL,
+                    to_addrs='kushalbro82@gmail.com',
+                    msg=f"Subject:{subject}\n\nName: {name}\nEmail: {email}\nMessage: {message}"
+                )
+            flash("Message sent successfully.", "success")
+
+            return redirect(url_for('home'))
+        
+        except Exception as e:
+            app.logger.error(f"Error sending email: {e}")
+            flash("An error occurred while sending the message.", "danger")
+
+    return render_template('contact_us.html', form=form)
 
 
 # runnning the app
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5500)
 
 
 
