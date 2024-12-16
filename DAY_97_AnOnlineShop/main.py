@@ -235,39 +235,73 @@ def products():
     return render_template('products.html', products=products, category=category)
 
 # Creating a route to view a single product
-@app.route('/cart')
+@app.route('/cart' ,methods=['GET', 'POST'])
 def cart():
     # getting all the products in the cart by user_id
-    # products = Cart.query.filter_by(user_id=current_user.id).all()
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
 
     if not current_user.is_authenticated:
         flash("You need to login first", "danger")
         return redirect(url_for('login'))
     # Logic for displaying the cart if authenticated
-    return render_template('cart.html')
+    return render_template('shoppingcart.html', cart_items = cart_items)
 
-# # Creating a route to add a product to the cart
-# @app.route('/add-to-cart/<int:id>')
-# def add_to_cart(id):
-#     if not current_user.is_authenticated:
-#         flash("You need to login first", "danger")
-#         return redirect(url_for('login'))
-    
+# Creating a route to update the quantity of a cart item
+@app.route('/update_cart_item/<int:id>', methods=['POST'])
+def update_cart_item(id):
+    if not current_user.is_authenticated:
+        flash("You need to log in first", "danger")
+        return redirect(url_for('login'))
 
-#     try:
-#         product = Product.query.get(id)
-#         if not product:
-#             flash("Product not found.", "danger")
-#             return redirect(url_for('products'))
-        
-#         cart = Cart(user_id=current_user.id, product_id=product.id, quantity=1)
-#         db.session.add(cart)
-#         db.session.commit()
-#         flash("Product added to cart successfully.", "success")
-#     except Exception as e:
-#         db.session.rollback()
-#         flash(f"An error occurred: {str(e)}", "danger")
-#     return redirect(url_for('product_details', id=id))
+    try:
+        # Retrieve the cart item by ID and ensure it belongs to the current user
+        cart_item = Cart.query.filter_by(id=id, user_id=current_user.id).first()
+
+        if not cart_item:
+            flash("Cart item not found.", "danger")
+            return redirect(url_for('cart'))
+
+        # Get the new quantity from the form
+        new_quantity = int(request.form.get('quantity', 1))  # Default to 1 if missing
+
+        if new_quantity < 1:
+            flash("Quantity must be at least 1.", "warning")
+        else:
+            # Update the cart item quantity
+            cart_item.quantity = new_quantity
+            db.session.commit()
+            flash(f"Updated quantity for {cart_item.product.name} to {new_quantity}.", "success")
+
+    except ValueError:
+        flash("Invalid quantity. Please enter a valid number.", "danger")
+    except Exception as e:
+        db.session.rollback()
+        flash("An error occurred while updating the cart.", "danger")
+
+    # Redirect back to the cart page
+    return redirect(url_for('cart'))
+
+
+@app.route('/delete_cart_item/<int:id>', methods=['POST', 'GET'])  # Allow POST for better practice
+def delete_cart_item(id):
+    try:
+        # Attempt to find the item
+        cart_item = Cart.query.filter_by(id=id).first()
+        if not cart_item:
+            flash("Item not found in the cart.", "warning")
+            return redirect(url_for('cart'))
+
+        # Delete the item
+        db.session.delete(cart_item)
+        db.session.commit()
+        flash("Item removed from cart successfully.", "success")
+
+    except Exception as e:
+        app.logger.error(f"Error deleting cart item: {e}")
+        db.session.rollback()
+        flash("An error occurred while removing the item from the cart.", "danger")
+
+    return redirect(url_for('cart'))
 
 
     
@@ -308,6 +342,21 @@ def product_details(id):
 
     return render_template('product_details.html', product=product, form=form)
 
+# creating a route to delete a product
+@app.route('/delete-product/<int:id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_product(id):
+    product = Product.query.get_or_404(id)
+    try:
+        db.session.delete(product)
+        db.session.commit()
+        flash('Product deleted successfully.', 'success')
+    except Exception as e:
+        flash("An error occurred while deleting the product.", "danger")
+        db.session.rollback()
+    return redirect(url_for('product_details', id=id))
+
 
 @app.route('/modify-product/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -319,15 +368,6 @@ def modify_product(id):
         pass
     return render_template('modify_product.html', product=product)
 
-@app.route('/delete-product/<int:id>', methods=['POST'])
-@login_required
-@admin_required
-def delete_product(id):
-    product = Product.query.get_or_404(id)
-    db.session.delete(product)
-    db.session.commit()
-    flash('Product deleted successfully.', 'success')
-    return redirect(url_for('products'))
 
 
 # runnning the app
