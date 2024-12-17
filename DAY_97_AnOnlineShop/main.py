@@ -10,14 +10,27 @@ from flask_sqlalchemy import SQLAlchemy, pagination
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, ForeignKey
 from functools import wraps
-from typing import List
-import hashlib
-import smtplib
 import os
 from dotenv import load_dotenv
 from smtplib import SMTP
 # importing forms from forms.py
 from forms import RegisterForm, LoginForm, AddProductForm, UpdateProductForm, QuantityForm, ContactForm
+import hmac
+import hashlib
+import uuid
+import base64
+import json
+
+# Generating a unique transaction Signature
+def genSha256(key, message):
+    key = key.encode('utf-8')
+    message = message.encode('utf-8')
+    hmac_sha256 = hmac.new(key, message, hashlib.sha256)
+    digest = hmac_sha256.digest()
+    #Convert the digest to a Base64-encoded string
+    signature = base64.b64encode(digest).decode('utf-8')
+    return signature
+
 
 
 # Load environment variables
@@ -327,8 +340,27 @@ def modify_product(id):
 
 
 # Creating a route to view all products in the cart
-@app.route('/cart' ,methods=['GET', 'POST'])
+@app.route('/cart' ,methods=['GET'])
 def cart():
+    # Logic for displaying the cart if authenticated
+    if not current_user.is_authenticated:
+        flash("You need to login first", "danger")
+        return redirect(url_for('login'))
+    
+    # Handling the form submission
+    if request.method == 'GET':
+        data = request.args.get('data')
+        if data:
+            flash("Transaction successful", "success")
+            decoded_data = base64.b64decode(data).decode('utf-8')
+            print(decoded_data)
+            map_data = json.loads(decoded_data)
+
+            print(map_data)
+    
+
+    
+
     # getting all the products in the cart by user_id
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
     
@@ -337,12 +369,26 @@ def cart():
 
     # calculate the total price of the products in the cart
     total_price = sum([item.product.price * item.quantity for item in cart_items])
+        # generate a unique transaction id
+    uuid_val = uuid.uuid4()
+    # Example usage:
+    secret_key = "8gBm/:&EnhH.1/q"
+    data_to_sign = f"total_amount={total_price},transaction_uuid={uuid_val},product_code=EPAYTEST"
+    result = genSha256(secret_key, data_to_sign)
 
-    if not current_user.is_authenticated:
-        flash("You need to login first", "danger")
-        return redirect(url_for('login'))
-    # Logic for displaying the cart if authenticated
-    return render_template('shoppingcart.html', cart_items = cart_items, total_price=total_price, total_quantity=total_quantity)
+    # creating a context dictionary
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'total_quantity': total_quantity,
+        'uuid': uuid_val,
+        'signature': result
+    }
+
+
+
+    # return the cart page
+    return render_template('shoppingcart.html', cart_items = cart_items, total_price=total_price, total_quantity=total_quantity , context=context)
 
 # Creating a route to update the quantity of a cart item
 @app.route('/update_cart_item/<int:id>', methods=['POST'])
@@ -432,6 +478,35 @@ def contact_us():
 
     return render_template('contact_us.html', form=form)
 
+
+
+
+
+# # Code to convert base64encoded string:
+# decoded_data = base64.b64decode(data).decode('utf-8')
+# print(decoded_data)
+# map_data = json.loads(decoded_data)
+
+# url for the checkout page
+# @app.route('/checkout', methods=['GET', 'POST'])
+# def checkout():
+#     # Logic for displaying the cart if authenticated
+#     if not current_user.is_authenticated:
+#         flash("You need to login first", "danger")
+#         return redirect(url_for('login'))
+    
+#     # getting all the products in the cart by user_id
+#     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    
+#     # calculate the total quantity of the products in the cart
+#     total_quantity = sum([item.quantity for item in cart_items])
+
+#     # calculate the total price of the products in the cart
+#     total_price = sum([item.product.price * item.quantity for item in cart_items])
+
+
+#     # return the checkout page
+#     return render_template('checkout.html', context=context)
 
 # runnning the app
 if __name__ == "__main__":
